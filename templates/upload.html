@@ -1,0 +1,17 @@
+{% load static%}
+
+<html>
+    <head>
+        <title>Добавление файла</title>
+        <link rel="stylesheet" href="{% static 'simpleuserpage/css/upload.css' %}">
+    </head>
+    <body>
+        <h1>Добавить файл</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="myfile">
+            <button type="submit">Отправить</button>
+            <a class="cancel" href="{% url 'simpleuser_page' %}">Отменить</a>
+        </form>
+    </body>
+</html>
