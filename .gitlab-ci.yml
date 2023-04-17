@@ -8,9 +8,9 @@ deploy_main:
   only:
     - main
   script:
+    - cd /opt/videoconferencing
     - git fetch --all --prune
-    - git checkout main
-    - git pull origin main
+    - git reset --hard origin/main
     - source /opt/videoconferencing/venv/bin/activate
     - pip install -r requirements.txt
 #    - python manage.py migrate
