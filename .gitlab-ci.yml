@@ -1,0 +1,18 @@
+stages:
+  - deploy
+
+deploy_main:
+  stage: deploy
+  tags:
+    - video
+  only:
+    - main
+  script:
+    - git fetch --all --prune
+    - git checkout main
+    - git pull origin main
+    - source /opt/videoconferencing/venv/bin/activate
+    - pip install -r requirements.txt
+#    - python manage.py migrate
+    - python manage.py collectstatic --noinput
+    - sudo systemctl restart gunicorn
