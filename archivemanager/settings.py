@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-f&_2y@o(tgobr2y3&^n^&%!icnw(vobwk^ps+1dkps*$4k1htt
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['amo.guitardo.ru']
+ALLOWED_HOSTS = ['amo.guitardo.ru', '127.0.0.1', 'videoconferencing.epublish.ru']
 
 
 # Application definition
