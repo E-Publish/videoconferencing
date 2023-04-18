@@ -48,7 +48,7 @@ def show_archive_data(request):
     paginated_data = Paginator(all_data, request.GET.get('lines_per_page', 50))  # здесь указываете количество строк на странице по умолчанию
     page_number = request.GET.get('page')
     page_obj = paginated_data.get_page(page_number)
-    return render(request, 'simpleuserpage.html', {'page_obj': page_obj})
+    return render(request, 'simple_user_page.html', {'page_obj': page_obj})
 
 
 def edit_info(request, id):
@@ -155,7 +155,7 @@ def search(request):
         results = ArchivesData.objects.filter(Q(name__icontains=query) | Q(participants__icontains=query))
     else:
         results = ArchivesData.objects.all()
-    return render(request, 'simpleuserpage.html', {'page_obj': results})
+    return render(request, 'simple_user_page.html', {'page_obj': results})
 
 
 def sort_table(request, field):
@@ -188,7 +188,7 @@ def sort_table(request, field):
             request.session['direction'] = 'asc'
 
     # Рендерим HTML с отсортированными данными
-    return render(request, 'simpleuserpage.html', {'page_obj': archives})
+    return render(request, 'simple_user_page.html', {'page_obj': archives})
 
 
 def download_archive(request, id):
