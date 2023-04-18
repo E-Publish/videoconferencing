@@ -14,6 +14,7 @@ from pathlib import Path
 
 from archivemanager import settings
 from filemanagement.views import find_new_files
+from archivemanager.settings import DESTINATION, ZIP_PASSWORD
 from .models import ArchivesData
 from .forms import EditArchiveInfoForm, EditUserInfoForm, AddUserForm
 
@@ -73,7 +74,7 @@ def delete_info(request, id):
         obj_to_delete.delete()
 
         # удаление самого архива
-        directory = 'C:/Users/kleme/Documents/EpublishPath/restrict'
+        directory = DESTINATION
         directory = os.path.join(directory, os.path.splitext(obj_to_delete.code_name)[0])
         if os.path.exists(directory):
             shutil.rmtree(directory)
@@ -192,7 +193,7 @@ def sort_table(request, field):
 
 
 def download_archive(request, id):
-    directory = 'C:/Users/kleme/Documents/EpublishPath/restrict'
+    directory = DESTINATION
     obj = ArchivesData.objects.get(id=id)
     directory = os.path.join(directory, os.path.splitext(obj.code_name)[0])
     code_name = obj.code_name
@@ -207,7 +208,7 @@ def download_archive(request, id):
 
 
 def download_video(request, id):
-    directory = 'C:/Users/kleme/Documents/EpublishPath/restrict'
+    directory = DESTINATION
     obj = ArchivesData.objects.get(id=id)
     directory = os.path.join(directory, os.path.splitext(obj.code_name)[0], os.path.splitext(obj.code_name)[0])
     video = obj.recording
@@ -222,7 +223,7 @@ def download_video(request, id):
 
 
 def download_file(request, id, handout):
-    directory = 'C:/Users/kleme/Documents/EpublishPath/restrict'
+    directory = DESTINATION
     obj = ArchivesData.objects.get(id=id)
     directory = os.path.join(directory, os.path.splitext(obj.code_name)[0], os.path.splitext(obj.code_name)[0])
     file = handout
@@ -237,9 +238,9 @@ def download_file(request, id, handout):
 
 
 def unpack_zip(request, id):
-    password = '757817'
+    password = ZIP_PASSWORD
     archive_info = get_object_or_404(ArchivesData, id=id)
-    directory = 'C:/Users/kleme/Documents/EpublishPath/restrict/'
+    directory = DESTINATION
     directory = os.path.join(directory, os.path.splitext(archive_info.code_name)[0])
     file_path = os.path.join(directory, archive_info.code_name)
     with zipfile.ZipFile(file_path, 'r') as zip_ref:
@@ -257,7 +258,7 @@ def unpack_zip(request, id):
 
 def upload_file(request, id):
     obj = ArchivesData.objects.get(id=id)
-    directory = 'C:/Users/kleme/Documents/EpublishPath/restrict/'
+    directory = DESTINATION
     directory = os.path.join(directory, os.path.splitext(obj.code_name)[0], os.path.splitext(obj.code_name)[0])
     if request.method == 'POST':
         myfile = request.FILES['myfile']
@@ -279,7 +280,7 @@ def delete_by_lifetime():
     today = timezone.now().date()
     expired_object = ArchivesData.objects.filter(lifetime=today, is_unremovable=False)
     for obj in expired_object:
-        directory = 'C:/Users/kleme/Documents/EpublishPath/restrict'
+        directory = DESTINATION
         directory = os.path.join(directory, os.path.splitext(obj.code_name)[0])
         if os.path.exists(directory):
             shutil.rmtree(directory)

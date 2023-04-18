@@ -151,3 +151,10 @@ EMAIL_USE_SSL = False
 
 
 MEDIA_ROOT = 'C:/Users/kleme/Documents/EpublishPath'
+
+
+BBB_VIDEO = 'C:/Users/kleme/Documents/EpublishPath/common'
+DESTINATION = 'C:/Users/kleme/Documents/EpublishPath/restrict'
+
+
+ZIP_PASSWORD = '757817'

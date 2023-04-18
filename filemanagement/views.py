@@ -1,14 +1,14 @@
 import os
 from datetime import timedelta, date
 
-from django.utils import timezone
+from archivemanager.settings import BBB_VIDEO, DESTINATION
 
 from simpleuserpage.models import ArchivesData
 
 
 def find_new_files():
-    directory = 'C:/Users/kleme/Documents/EpublishPath/common'
-    destination = 'C:/Users/kleme/Documents/EpublishPath/restrict'
+    directory = BBB_VIDEO
+    destination = DESTINATION
     lifetime = date.today() + timedelta(days=180)
     if len(os.listdir(directory)) > 0:
         files = os.listdir(directory)

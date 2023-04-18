@@ -101,7 +101,7 @@
 					{% if request.user.is_authenticated and request.user.is_staff %}
 					<td>{{ row.code_name }}</td>
 					<td class="edit_row" ><a class="edit_link" href="{% url 'edit_info' id=row.id %}">Редактировать</a></td>
-					<td><a class="edit_link" href="{% url 'unpack_archive' id=row.id %}">Распаковать</a></td>
+					<td class="unpack_row"><a class="edit_link" href="{% url 'unpack_archive' id=row.id %}">Распаковать</a></td>
 					<td class="delete_row"><a class="delete_link" href="{% url 'delete_info' id=row.id %}">Удалить</a></td>
 					{% endif %}
     			</tr>
