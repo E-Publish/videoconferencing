@@ -1,9 +1,9 @@
 body{
-    background-color: #E6E6FA;
+    background-color: #fff;
 }
 
 .auth_block{
-    background-color: #E6E6FA;
+    background-color: #fff;
     margin-left: auto;
     margin-right: auto;
     width: 600px;
@@ -18,7 +18,7 @@ body{
     margin-left: auto;
     margin-right: auto;
     width: 70%;
-    padding-top: 30%;
+    padding-top: 25%;
 }
 
 .login-container {
@@ -31,7 +31,7 @@ form {
     flex-direction: column;
     padding-top: 35%;
 }
-  
+
 .form-group {
     width: 80%;
     margin-bottom: 15px;
@@ -40,7 +40,7 @@ form {
 }
 
 input::placeholder{
-    color: #D3D3D3;
+    color: #f1f1f1;
     font-family: Arial;
     font-size: large;
 }
@@ -52,12 +52,14 @@ input[type="text"], input[type="password"] {
     padding: 4%;
 }
 
+
 .login_button{
     width: 30%;
     display: flex;
+    justify-content: center;
     margin-left: auto;
     margin-right: auto;
-    background-color: #8DA3F4;
+    background-color: #5b8090;
     color: #fff;
     font-family: Arial;
     font-size: large;
@@ -68,7 +70,7 @@ input[type="text"], input[type="password"] {
 }
 
 .login_button:hover {
-    background-color: #6284ff;
+    background-color: #5b8090;
 }
 
 .user_error{

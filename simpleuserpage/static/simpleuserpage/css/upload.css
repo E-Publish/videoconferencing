@@ -1,6 +1,6 @@
 body{
     margin-top: 20%;
-    background-color: #E6E6FA;
+    background-color: #fff;
     align-content: center;
     text-align: center;
 }
@@ -21,7 +21,7 @@ button{
     border-radius: 15px;
     border: none;
     text-decoration: none;
-    background: #6B6BFF;
+    background: #F48120;
     color: white;
     font-size: medium;
 }
