@@ -8,7 +8,7 @@ from loginwindow.forms import AuthUserForm
 
 # Create your views here.
 def login_page(request):
-    return render(request, 'edit_info.html')
+    return render(request, 'registration/login.html')
 
 
 def redirect_to_filemanager(request):
