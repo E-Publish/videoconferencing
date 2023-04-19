@@ -6,15 +6,11 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.core.paginator import *
 from django.db.models import Q
-from django.http import HttpResponse, Http404, FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.utils import timezone
-from django.views.generic import FormView
-from pathlib import Path
 
 from archivemanager import settings
-from filemanagement.views import find_new_files
-from archivemanager.settings import DESTINATION, ZIP_PASSWORD
+from archivemanager.settings import DESTINATION
+from filemanagement.views import find_new_files, delete_by_lifetime
 from .models import ArchivesData
 from .forms import EditArchiveInfoForm, EditUserInfoForm, AddUserForm
 
@@ -35,10 +31,10 @@ def show_archive_data(request):
     date_to = request.GET.get('date_to')
 
     if date_from:
-        all_data = all_data.filter(eventdate__gte=date_from)  # Используем `time__gte` для выбора записей после `date_from`
+        all_data = all_data.filter(event_date__gte=date_from)  # Используем `time__gte` для выбора записей после `date_from`
 
     if date_to:
-        all_data = all_data.filter(eventdate__lte=date_to)  # Используем `time__lte` для выбора записей до `date_to`
+        all_data = all_data.filter(event_date__lte=date_to)  # Используем `time__lte` для выбора записей до `date_to`
 
     for obj in all_data:
         obj.handout_list = obj.handout.split(',')
@@ -66,22 +62,6 @@ def edit_info(request, id):
         return render(request, 'edit_info.html', {'form': form})
     else:
         return redirect('simpleuser_page', permanent=True)
-
-
-def delete_info(request, id):
-    if request.user.is_authenticated and request.user.is_staff:
-        obj_to_delete = ArchivesData.objects.get(id=id)
-        obj_to_delete.delete()
-
-        # удаление самого архива
-        directory = DESTINATION
-        directory = os.path.join(directory, os.path.splitext(obj_to_delete.code_name)[0])
-        if os.path.exists(directory):
-            shutil.rmtree(directory)
-
-        return redirect('simpleuser_page')
-    else:
-        return redirect('simpleuser_page')
 
 
 def admin_panel(request):
@@ -192,96 +172,11 @@ def sort_table(request, field):
     return render(request, 'simple_user_page.html', {'page_obj': archives})
 
 
-def download_archive(request, id):
-    directory = DESTINATION
-    obj = ArchivesData.objects.get(id=id)
-    directory = os.path.join(directory, os.path.splitext(obj.code_name)[0])
-    code_name = obj.code_name
-    file_path = os.path.join(directory, code_name)
-    if os.path.isfile(file_path):
-        with open(file_path, 'rb') as fh:
-            response = FileResponse(fh.read())
-            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
-            return response
-    else:
-        return redirect('simpleuser_page')
-
-
-def download_video(request, id):
+def video_player(request, id):
     directory = DESTINATION
     obj = ArchivesData.objects.get(id=id)
     directory = os.path.join(directory, os.path.splitext(obj.code_name)[0], os.path.splitext(obj.code_name)[0])
     video = obj.recording
     file_path = os.path.join(directory, video)
-    if os.path.isfile(file_path):
-        with open(file_path, 'rb') as fh:
-            response = FileResponse(fh.read())
-            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
-            return response
-    else:
-        return redirect('simpleuser_page')
-
-
-def download_file(request, id, handout):
-    directory = DESTINATION
-    obj = ArchivesData.objects.get(id=id)
-    directory = os.path.join(directory, os.path.splitext(obj.code_name)[0], os.path.splitext(obj.code_name)[0])
-    file = handout
-    file_path = os.path.join(directory, file)
-    if os.path.isfile(file_path):
-        with open(file_path, 'rb') as fh:
-            response = FileResponse(fh.read())
-            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
-            return response
-    else:
-        return redirect('simpleuser_page')
-
-
-def unpack_zip(request, id):
-    password = ZIP_PASSWORD
-    archive_info = get_object_or_404(ArchivesData, id=id)
-    directory = DESTINATION
-    directory = os.path.join(directory, os.path.splitext(archive_info.code_name)[0])
-    file_path = os.path.join(directory, archive_info.code_name)
-    with zipfile.ZipFile(file_path, 'r') as zip_ref:
-        zip_ref.setpassword(bytes(password, 'utf-8'))
-        folder_path = os.path.splitext(file_path)[0]
-        zip_ref.extractall(folder_path)
-
-    for file in os.listdir(os.path.join(directory, os.path.splitext(archive_info.code_name)[0])):
-        if file.endswith('.mp4'):
-            archive_info.recording = file
-            archive_info.save()
-            break
-    return redirect('simpleuser_page')
-
-
-def upload_file(request, id):
-    obj = ArchivesData.objects.get(id=id)
-    directory = DESTINATION
-    directory = os.path.join(directory, os.path.splitext(obj.code_name)[0], os.path.splitext(obj.code_name)[0])
-    if request.method == 'POST':
-        myfile = request.FILES['myfile']
-        directory = Path(directory)/myfile.name
-        with directory.open('wb+') as destination:
-            for chunk in myfile.chunks():
-                destination.write(chunk)
-
-            if obj.handout:
-                obj.handout += f",{myfile.name}"
-            else:
-                obj.handout = myfile.name
-            obj.save()
-        return redirect('simpleuser_page')
-    return render(request, 'upload.html')
-
-
-def delete_by_lifetime():
-    today = timezone.now().date()
-    expired_object = ArchivesData.objects.filter(lifetime=today, is_unremovable=False)
-    for obj in expired_object:
-        directory = DESTINATION
-        directory = os.path.join(directory, os.path.splitext(obj.code_name)[0])
-        if os.path.exists(directory):
-            shutil.rmtree(directory)
-        expired_object.delete()
+    context = {'video': file_path}
+    return render(request, 'video_player.html', context)

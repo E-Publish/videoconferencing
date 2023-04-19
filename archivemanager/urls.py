@@ -16,9 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from filemanagement.views import upload_file, unpack_zip, download_file, download_video, download_archive, delete_info
 from loginwindow.views import login_page, redirect_to_filemanager
-from simpleuserpage.views import show_archive_data, edit_info, delete_info, admin_panel, edit_user_info, delete_user, \
-    add_user, search, download_archive, unpack_zip, sort_table, download_video, upload_file, download_file
+from simpleuserpage.views import show_archive_data, edit_info, admin_panel, edit_user_info, delete_user, \
+    add_user, search, sort_table, video_player
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -39,4 +40,5 @@ urlpatterns = [
     path('simpleuser/<int:id>/', unpack_zip, name='unpack_archive'),
     path('simpleuser/sort/<str:field>/', sort_table, name='sort_table'),
     path('simpleuser/upload/<int:id>/', upload_file, name='upload_file'),
+    path('play_video/<int:id>/', video_player, name='video_player'),
 ]
