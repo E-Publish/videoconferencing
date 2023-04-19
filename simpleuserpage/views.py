@@ -31,10 +31,12 @@ def show_archive_data(request):
     date_to = request.GET.get('date_to')
 
     if date_from:
-        all_data = all_data.filter(event_date__gte=date_from)  # Используем `time__gte` для выбора записей после `date_from`
+        # Используем `time__gte` для выбора записей после `date_from`
+        all_data = all_data.filter(event_date__gte=date_from)
 
     if date_to:
-        all_data = all_data.filter(event_date__lte=date_to)  # Используем `time__lte` для выбора записей до `date_to`
+        # Используем `time__lte` для выбора записей до `date_to`
+        all_data = all_data.filter(event_date__lte=date_to)
 
     for obj in all_data:
         obj.handout_list = obj.handout.split(',')
@@ -42,7 +44,8 @@ def show_archive_data(request):
     for obj in all_data:
         obj.participants_list = obj.participants.split(',')
 
-    paginated_data = Paginator(all_data, request.GET.get('lines_per_page', 50))  # здесь указываете количество строк на странице по умолчанию
+    # здесь указываете количество строк на странице по умолчанию
+    paginated_data = Paginator(all_data, request.GET.get('lines_per_page', 50))
     page_number = request.GET.get('page')
     page_obj = paginated_data.get_page(page_number)
     return render(request, 'simple_user_page.html', {'page_obj': page_obj})
@@ -67,7 +70,8 @@ def edit_info(request, id):
 def admin_panel(request):
     if request.user.is_authenticated and request.user.is_staff:
         users = User.objects.all()
-        paginated_data = Paginator(users, request.GET.get('lines_per_page', 50))  # здесь указываете количество строк на странице по умолчанию
+        # здесь указываете количество строк на странице по умолчанию
+        paginated_data = Paginator(users, request.GET.get('lines_per_page', 50))
         page_number = request.GET.get('page')
         page_obj = paginated_data.get_page(page_number)
         return render(request, 'admin_panel.html', {'users': page_obj})
@@ -173,9 +177,8 @@ def sort_table(request, field):
 
 
 def video_player(request, id):
-    directory = DESTINATION
     obj = ArchivesData.objects.get(id=id)
-    directory = os.path.join(directory, os.path.splitext(obj.code_name)[0], os.path.splitext(obj.code_name)[0])
+    directory = os.path.join(DESTINATION, os.path.splitext(obj.code_name)[0], os.path.splitext(obj.code_name)[0])
     video = obj.recording
     file_path = os.path.join(directory, video)
     context = {'video': file_path}

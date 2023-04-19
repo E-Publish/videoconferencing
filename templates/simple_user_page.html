@@ -96,7 +96,7 @@
     				<td>{{ row.participants }}</td>
     				<td>{{ row.description }}</td>
     				<td class="handout"> {% if row.handout != '' %} {% for handout in row.handout_list %} <a href="{% url 'download_file' id=row.id handout=handout %}">{{ handout }}<br></a> {% endfor %} {% endif %} <br> <a class="add_file" href="{% url 'upload_file' id=row.id %}">+</a></td>
-    				<td><a href="{% url 'download_video' id=row.id %}">{{ row.recording }}</a></td>
+    				<td><a href="{% url 'video_player' id=row.id %}" target="_blank">{{ row.recording }}</a></td>
 					<td><a href="{% url 'download_archive' id=row.id %}">Скачать</a></td>
 					{% if request.user.is_authenticated and request.user.is_staff %}
 					<td>{{ row.code_name }}</td>

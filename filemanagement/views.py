@@ -111,18 +111,39 @@ def download_video(request, id):
 
 
 def download_archive(request, id):
-    directory = DESTINATION
     obj = ArchivesData.objects.get(id=id)
-    directory = os.path.join(directory, os.path.splitext(obj.code_name)[0])
-    code_name = obj.code_name
-    file_path = os.path.join(directory, code_name)
-    if os.path.isfile(file_path):
-        with open(file_path, 'rb') as fh:
+
+    # название архива, который будет передан пользователю
+    zip_name = os.path.join(
+        DESTINATION,
+        os.path.splitext(obj.code_name)[0],
+        f'{os.path.splitext(obj.code_name)[0]}-{obj.event_date}.zip'
+    )
+
+    # путь до папки, которую поместим в архив
+    zip_path = os.path.join(
+        DESTINATION,
+        os.path.splitext(obj.code_name)[0],
+        os.path.splitext(obj.code_name)[0]
+    )
+
+    zip_file = zipfile.ZipFile(zip_name, 'w')
+
+    for root, dirs, files in os.walk(str(zip_path)):
+        for file in files:
+            file_path = os.path.join(root, file)
+            zip_file.write(file_path, file, compress_type=zipfile.ZIP_DEFLATED)
+
+    zip_file.close()
+
+    if os.path.isfile(zip_name):
+        with open(zip_name, 'rb') as fh:
             response = FileResponse(fh.read())
-            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(zip_name)
             return response
     else:
         return redirect('simpleuser_page')
+
 
 
 def delete_info(request, id):
