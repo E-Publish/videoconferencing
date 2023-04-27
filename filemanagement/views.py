@@ -137,13 +137,11 @@ def download_archive(request, id):
     zip_file.close()
 
     if os.path.isfile(zip_name):
-        with open(zip_name, 'rb') as fh:
-            response = FileResponse(fh.read())
-            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(zip_name)
-            return response
+        response = FileResponse(open(zip_name, 'rb'))
+        response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(zip_name)
+        return response
     else:
         return redirect('simpleuser_page')
-
 
 
 def delete_info(request, id):

@@ -1,11 +1,10 @@
 import os
-import shutil
-import zipfile
 
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.core.paginator import *
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from archivemanager import settings
@@ -19,7 +18,7 @@ def show_archive_data(request):
     if request.user.is_staff:
         find_new_files()
         delete_by_lifetime()
-    all_data = ArchivesData.objects.all()
+    all_data = ArchivesData.objects.all().order_by('id')
 
     show_recorded = request.GET.get('show_recorded')
     if show_recorded:
@@ -164,12 +163,12 @@ def sort_table(request, field):
         else:
             archives = archives.order_by('-name')
             request.session['direction'] = 'asc'
-    elif field == 'eventdate':
+    elif field == 'event_date':
         if direction == 'asc':
-            archives = archives.order_by('eventdate')
+            archives = archives.order_by('event_date')
             request.session['direction'] = 'desc'
         else:
-            archives = archives.order_by('eventdate')
+            archives = archives.order_by('event_date')
             request.session['direction'] = 'asc'
 
     # Рендерим HTML с отсортированными данными
@@ -181,5 +180,6 @@ def video_player(request, id):
     directory = os.path.join(DESTINATION, os.path.splitext(obj.code_name)[0], os.path.splitext(obj.code_name)[0])
     video = obj.recording
     file_path = os.path.join(directory, video)
-    context = {'video': file_path}
-    return render(request, 'video_player.html', context)
+    response = HttpResponse(open(file_path, 'rb').read(), content_type='video/mp4')
+    response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+    return response
