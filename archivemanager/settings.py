@@ -141,8 +141,8 @@ EMAIL_USE_SSL = False
 MEDIA_ROOT = '../EpublishPath'
 
 
-BBB_VIDEO = './EpublishPath/common'
-DESTINATION = './EpublishPath/restrict'
+BBB_VIDEO = '/opt/videoconferencing.epublish.ru/'
+DESTINATION = '/opt/videoconferencing.epublish.ru/restrict'
 
 
 ZIP_PASSWORD = '757817'
