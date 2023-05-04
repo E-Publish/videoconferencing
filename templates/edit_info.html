@@ -1,5 +1,4 @@
 {% load static%}
-
 {% if request.user.is_authenticated and request.user.is_staff %}
 <html>
 {% block content %}
@@ -11,7 +10,7 @@
         </head>
         <h1>Изменение данных</h1>
         <form method="POST" class="post-form">{% csrf_token %}
-                {{ form.as_div }}
+            {{ form.as_div }}
             <button type="submit" class="save btn btn-default">Сохранить</button>
             <a class="cancel" href="{% url 'simpleuser_page' %}">Отменить</a>
         </form>
