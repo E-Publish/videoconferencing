@@ -142,7 +142,7 @@ MEDIA_ROOT = '../EpublishPath'
 
 
 BBB_VIDEO = '/opt/videoconferencing.epublish.ru/'
-DESTINATION = '/opt/videoconferencing.epublish.ru/restrict'
+DESTINATION = '/opt/resctrict/'
 
 
 ZIP_PASSWORD = '757817'
