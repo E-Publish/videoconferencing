@@ -3,8 +3,8 @@ from django.db import models
 
 class ArchivesData(models.Model):
     id = models.IntegerField
-    name = models.CharField(max_length=30)
-    code_name = models.CharField(max_length=30)
+    name = models.CharField(max_length=255)
+    code_name = models.CharField(max_length=255)
     is_private = models.BooleanField()
     event_date = models.DateField()
     lifetime = models.DateField()
