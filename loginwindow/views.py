@@ -8,8 +8,16 @@ from loginwindow.forms import AuthUserForm
 
 # Create your views here.
 def login_page(request):
-    form = AuthenticationForm()
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('')
+    else:
+        form = AuthenticationForm()
     return render(request, 'registration/login.html', {'form': form})
+
 
 def redirect_to_filemanager(request):
     if request.user.is_authenticated:
