@@ -146,3 +146,6 @@ DESTINATION = '/opt/videoconferencing.epublish.ru/restrict'
 
 
 ZIP_PASSWORD = '757817'
+
+CSRF_COOKIE_DOMAIN = '.epublish.ru'
+CSRF_TRUSTED_ORIGINS = ['videoconferencing.epublish.ru']
