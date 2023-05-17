@@ -145,7 +145,7 @@ BBB_VIDEO = '/opt/videoconferencing.epublish.ru/'
 DESTINATION = '/opt/videoconferencing.epublish.ru/restrict'
 
 
-ZIP_PASSWORD = '757817'
+ZIP_PASSWORD = 'HiperbolA'
 
 CSRF_COOKIE_DOMAIN = '.epublish.ru'
 CSRF_TRUSTED_ORIGINS = ['https://videoconferencing.epublish.ru']
