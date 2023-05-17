@@ -120,7 +120,7 @@ def add_user(request):
             User.objects.create_user(username=username, password=password, first_name=first_name, last_name=last_name,
                                      email=email, is_staff=is_staff)
             send_mail(
-                'Регистрация в корпоративном файловом менеджере\n',
+                'Регистрация в корпоративном файловом менеджере',
                 f'Вам был создан аккаунт на Epublish File Manager\nhttp://localhost:8000/\nЛогин: {username}\n'
                 f'Пароль: {password}\n',
                 settings.EMAIL_HOST_USER,
