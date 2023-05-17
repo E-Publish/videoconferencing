@@ -22,12 +22,14 @@ def find_new_files():
         files = os.listdir(directory)
         for x in range(len(os.listdir(directory))):
             filename = files[x]
-            newarchive = ArchivesData(code_name=filename, event_date=event_date, lifetime=lifetime, is_private=True, is_unremovable=True)
+            newarchive = ArchivesData(code_name=filename, event_date=event_date, lifetime=lifetime, is_private=True,
+                                      is_unremovable=True)
             newarchive.save()
             newpathdir = os.path.join(destination, os.path.splitext(filename)[0])
             if not os.path.exists(newpathdir):
                 os.mkdir(newpathdir)
-            os.rename(os.path.join(directory, filename), os.path.join(destination, os.path.splitext(filename)[0], filename))
+            os.rename(os.path.join(directory, filename), os.path.join(destination, os.path.splitext(filename)[0],
+                                                                      filename))
 
 
 def delete_by_lifetime():
