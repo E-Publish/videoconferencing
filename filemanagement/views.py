@@ -2,7 +2,9 @@ import os
 import shutil
 import zipfile
 from datetime import timedelta, date
+from enum import Enum
 from pathlib import Path
+from threading import Thread
 
 from django.http import FileResponse
 from django.shortcuts import redirect, render, get_object_or_404
@@ -11,6 +13,12 @@ from django.utils import timezone
 from archivemanager.settings import BBB_VIDEO, DESTINATION, ZIP_PASSWORD
 
 from simpleuserpage.models import ArchivesData
+
+
+class ArchiveStatus(Enum):
+    not_unpacked = 0
+    unpacked = 1
+    unpacking_process = 2
 
 
 def find_new_files():
@@ -64,6 +72,14 @@ def upload_file(request, id):
 
 
 def unpack_zip(request, id):
+    archive_info = get_object_or_404(ArchivesData, id=id)
+    archive_info.unpacked = ArchiveStatus.unpacking_process.value
+    archive_info.save()
+    Thread(target=unpack_zip_thread, args=(request, id)).start()
+    return redirect('simpleuser_page')
+
+
+def unpack_zip_thread(request, id):
     password = ZIP_PASSWORD
     archive_info = get_object_or_404(ArchivesData, id=id)
     directory = DESTINATION
@@ -77,9 +93,9 @@ def unpack_zip(request, id):
     for file in os.listdir(os.path.join(directory, os.path.splitext(archive_info.code_name)[0])):
         if file.endswith('.mp4'):
             archive_info.recording = file
+            archive_info.unpacked = ArchiveStatus.unpacked.value
             archive_info.save()
             break
-    return redirect('simpleuser_page')
 
 
 def download_file(request, id, handout):

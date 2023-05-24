@@ -13,6 +13,7 @@ class ArchivesData(models.Model):
     description = models.TextField()
     handout = models.TextField()
     recording = models.TextField()
+    unpacked = models.SmallIntegerField(default=0)
 
     class Meta:
         db_table = 'conference'

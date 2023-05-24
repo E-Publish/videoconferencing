@@ -28,16 +28,15 @@ input, label{
     vertical-align: middle;
 }
 
+
 textarea{
     border-radius: 15px;
     border: none;
     padding: 5px;
     text-align: center;
-    resize: vertical;
     box-sizing: content-box;
     margin: auto;
     vertical-align: middle;
-    height: 20px;
 }
 
 button{
@@ -72,5 +71,9 @@ button{
 }
 
 .helptext{
+    display: none;
+}
+
+.hidden {
     display: none;
 }

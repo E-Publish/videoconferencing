@@ -80,7 +80,6 @@
 					{% if request.user.is_authenticated and request.user.is_staff %}
 					<th>Название файла</th>
 					<th class="edit_row" >Редактирование</th>
-					<th class="unpack_row">Распаковка</th>
 					<th class="delete_row">Удаление</th>
 					{% endif %}
     			</tr>
@@ -93,15 +92,31 @@
     				<td>{{ row.name }}</td>
     				<td>{{ row.event_date|date:"d-m-Y" }}</td>
 					<td>{{ row.lifetime|date:"d-m-Y" }}</td>
-    				<td>{{ row.participants }}</td>
+    				<td>
+        				    {% if row.participants != '' %}
+        				        <div class="scrollable">
+        				            {% for participant in row.participants_list %}
+        				                {{ participant }}<br>
+        				            {% endfor %}
+        				        </div>
+        				    {% endif %}
+        				</td>
     				<td>{{ row.description }}</td>
     				<td class="handout"> {% if row.handout != '' %} {% for handout in row.handout_list %} <a href="{% url 'download_file' id=row.id handout=handout %}">{{ handout }}<br></a> {% endfor %} {% endif %} <br> <a class="add_file" href="{% url 'upload_file' id=row.id %}">+</a></td>
-    				<td><a href="{% url 'video_player' id=row.id %}" target="_blank">{{ row.recording }}</a></td>
+    				<td><a href="{% url 'video_player' id=row.id %}" target="_blank">
+						{% if row.unpacked == 0 %}
+						<a class="edit_link" href="{% url 'unpack_archive' id=row.id %}">Распаковать</a>
+						{% elif row.unpacked == 2 %}
+						<a class="edit_link">В процессе...</a>
+						{% else %}
+						{{ row.recording }}
+						{% endif %}
+						</a>
+					</td>
 					<td><a href="{% url 'download_archive' id=row.id %}">Скачать</a></td>
 					{% if request.user.is_authenticated and request.user.is_staff %}
 					<td>{{ row.code_name }}</td>
 					<td class="edit_row" ><a class="edit_link" href="{% url 'edit_info' id=row.id %}">Редактировать</a></td>
-					<td class="unpack_row"><a class="edit_link" href="{% url 'unpack_archive' id=row.id %}">Распаковать</a></td>
 					<td class="delete_row"><a class="delete_link" href="{% url 'delete_info' id=row.id %}">Удалить</a></td>
 					{% endif %}
     			</tr>
@@ -113,7 +128,15 @@
     					<td>{{ row.name }}</td>
     					<td>{{ row.event_date|date:"d-m-Y" }}</td>
 						<td>{{ row.lifetime|date:"d-m-Y" }}</td>
-    					<td>{% if row.participants != '' %} {% for participant in row.participants_list %} {{ participant }}<br> {% endfor %} {% endif %}</td>
+    					<td>
+        				    {% if row.participants != '' %}
+        				        <div class="scrollable">
+        				            {% for participant in row.participants_list %}
+        				                {{ participant }}<br>
+        				            {% endfor %}
+        				        </div>
+        				    {% endif %}
+        				</td>
     					<td>{{ row.description }}</td>
     					<td class="handout"> {% if row.handout != '' %} {% for handout in row.handout_list %} <a href="{% url 'download_file' id=row.id handout=handout %}">{{ handout }}<br></a> {% endfor %} {% endif %} <br> <a class="add_file" href="{% url 'upload_file' id=row.id %}">+</a></td>
     					<td><a href="{% url 'video_player' id=row.id %}" target="_blank">{{ row.recording }}</a></td>
@@ -133,6 +156,14 @@
   	{% else %}
     <p>Please login to see this page.</p>
 	{% endif %}
+
+	{% block javascript %}
+		<script>
+    		setInterval(function() {
+    		  location.reload();
+    		}, 5000);
+  		</script>
+	{% endblock %}
 	</body>
 
 </html>

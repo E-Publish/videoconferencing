@@ -6,6 +6,7 @@ from django.core.paginator import *
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils.crypto import get_random_string
 
 from archivemanager import settings
 from archivemanager.settings import DESTINATION
@@ -111,7 +112,7 @@ def add_user(request):
         form = AddUserForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
+            password = get_random_string(length=10, allowed_chars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*(-_=+)')
             first_name = form.cleaned_data.get('first_name')
             last_name = form.cleaned_data.get('last_name')
             email = form.cleaned_data.get('email')
@@ -121,7 +122,7 @@ def add_user(request):
                                      email=email, is_staff=is_staff)
             send_mail(
                 'Регистрация в корпоративном файловом менеджере',
-                f'Вам был создан аккаунт на Epublish File Manager\nhttp://localhost:8000/\nЛогин: {username}\n'
+                f'Вам был создан аккаунт на Epublish File Manager\nvideoconferencing.epublish.ru\nЛогин: {username}\n'
                 f'Пароль: {password}\n',
                 settings.EMAIL_HOST_USER,
                 [f'{email}'],
