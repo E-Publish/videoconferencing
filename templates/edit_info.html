@@ -14,6 +14,34 @@
             <button type="submit" class="save btn btn-default">Сохранить</button>
             <a class="cancel" href="{% url 'simpleuser_page' %}">Отменить</a>
         </form>
+
+        {% block javascript %}
+        <script>
+            (function() {
+              var checkbox = document.getElementById('id_is_unremovable');
+              var lifetimeInput = document.getElementById('id_lifetime');
+              var lifetimeLabel = document.querySelector('label[for="id_lifetime"]');
+
+
+              if (checkbox.checked) {
+                lifetimeInput.style.display = 'none';
+                lifetimeLabel.style.display = 'none';
+              }
+
+              // обработчик изменения состояния флажка
+              checkbox.addEventListener('change', function() {
+                if (checkbox.checked) {
+                  lifetimeInput.style.display = 'none';
+                  lifetimeLabel.style.display = 'none';
+                }
+                else {
+                  lifetimeInput.style.display = 'block';
+                  lifetimeLabel.style.display = 'block';
+                }
+              });
+            })();
+        </script>
+        {% endblock %}
     </body>
 {% endblock %}
 </html>
