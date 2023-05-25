@@ -305,15 +305,3 @@ table tbody tr:last-child td:last-child{
   background-color: #F48120;
   border-radius: 20px;
 }
-
-.small {
-    font-size: 12px;
-}
-
-.medium {
-    font-size: 14px;
-}
-
-.large {
-    font-size: 16px;
-}
