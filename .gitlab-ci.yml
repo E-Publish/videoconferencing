@@ -13,6 +13,7 @@ deploy_main:
     - git reset --hard origin/main
     - source /opt/videoconferencing/venv/bin/activate
     - pip install -r requirements.txt
-#    - python manage.py migrate
+    - python manage.py makemigrations
+    - python manage.py migrate
     - python3.9 manage.py collectstatic --noinput
     - sudo /usr/local/etc/rc.d/gunicorn restart
