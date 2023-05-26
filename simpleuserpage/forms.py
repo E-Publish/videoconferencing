@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.forms import TextInput
+from prompt_toolkit.widgets import TextArea
 
 from .models import ArchivesData
 
@@ -13,15 +14,15 @@ class EditArchiveInfoForm(forms.ModelForm):
     name = forms.CharField(label='Название', required=False)
     lifetime = forms.DateField(label='Время жизни', widget=DateInput())
     is_unremovable = forms.BooleanField(label='Неудаляемый', required=False)
-    participants = forms.CharField(label='Участники', required=False)
-    description = forms.CharField(label='Описание', required=False)
+    participants = forms.CharField(label='Участники', required=False, widget=forms.Textarea(attrs={'rows': 1}))
+    description = forms.CharField(label='Описание', required=False, widget=forms.Textarea(attrs={'rows': 1}))
     is_private = forms.BooleanField(label='Приватный', required=False)
 
     class Meta:
         model = ArchivesData
         fields = ('name', 'lifetime', 'is_unremovable', 'participants', 'description', 'is_private')
         widgets = {
-            'lifetime': DateInput()
+            'lifetime': DateInput(),
         }
 
 
