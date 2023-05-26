@@ -130,7 +130,7 @@ LOGIN_URL = 'login/'
 # SMTP settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = '172.16.1.5'
-EMAIL_PORT = 25
+EMAIL_PORT = 465
 EMAIL_HOST_USER = 'sys@edusite.ru'
 EMAIL_HOST_PASSWORD = 'z4PScNE6'
 EMAIL_USE_TLS = False
