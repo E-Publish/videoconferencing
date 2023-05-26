@@ -129,13 +129,12 @@ LOGIN_URL = 'login/'
 
 # SMTP settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = '172.16.1.5'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'testsmtp193@gmail.com'
-EMAIL_HOST_PASSWORD = 'xyikjbjsgmmakamd'
+EMAIL_HOST_USER = 'sys@edusite.ru'
+EMAIL_HOST_PASSWORD = 'z4PScNE6'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-
 
 
 MEDIA_ROOT = '../EpublishPath'
