@@ -291,6 +291,7 @@ table tbody tr:last-child td:last-child{
     overflow-y: auto;
     scrollbar-color: #458245 #714826;
     max-height: 70px;
+    max-width: 250px;
 }
 
 .scrollable::-webkit-scrollbar {
