@@ -134,7 +134,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'sys@edusite.ru'
 EMAIL_HOST_PASSWORD = 'z4PScNE6'
 EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
+EMAIL_USE_SSL = True
 
 
 MEDIA_ROOT = '../EpublishPath'
