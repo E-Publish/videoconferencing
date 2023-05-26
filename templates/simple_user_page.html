@@ -93,15 +93,21 @@
     				<td>{{ row.event_date|date:"d-m-Y" }}</td>
 					<td>{{ row.lifetime|date:"d-m-Y" }}</td>
     				<td>
-        				    {% if row.participants != '' %}
+						{% if row.participants != '' %}
+						<div class="scrollable">
+							{% for participant in row.participants_list %}
+							{{ participant }}<br>
+							{% endfor %}
+						</div>
+						{% endif %}
+					</td>
+    				<td>
+						{% if row.description != '' %}
         				        <div class="scrollable">
-        				            {% for participant in row.participants_list %}
-        				                {{ participant }}<br>
-        				            {% endfor %}
+        				                {{ row.description }}<br>
         				        </div>
-        				    {% endif %}
-        				</td>
-    				<td>{{ row.description }}</td>
+						{% endif %}
+					</td>
     				<td class="handout"> {% if row.handout != '' %} {% for handout in row.handout_list %} <a href="{% url 'download_file' id=row.id handout=handout %}">{{ handout }}<br></a> {% endfor %} {% endif %} <br> <a class="add_file" href="{% url 'upload_file' id=row.id %}">+</a></td>
     				<td><a href="{% url 'video_player' id=row.id %}" target="_blank">
 						{% if row.unpacked == 0 %}
@@ -137,7 +143,13 @@
         				        </div>
         				    {% endif %}
         				</td>
-    					<td>{{ row.description }}</td>
+    					<td>
+							{% if row.description != '' %}
+        					        <div class="scrollable">
+        					                {{ row.description }}<br>
+        					        </div>
+							{% endif %}
+						</td>
     					<td class="handout"> {% if row.handout != '' %} {% for handout in row.handout_list %} <a href="{% url 'download_file' id=row.id handout=handout %}">{{ handout }}<br></a> {% endfor %} {% endif %} <br> <a class="add_file" href="{% url 'upload_file' id=row.id %}">+</a></td>
     					<td><a href="{% url 'video_player' id=row.id %}" target="_blank">{{ row.recording }}</a></td>
 						<td><a href="{% url 'download_archive' id=row.id %}">Скачать</a></td>
