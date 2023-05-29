@@ -11,7 +11,7 @@ class DateInput(forms.DateInput):
 
 
 class EditArchiveInfoForm(forms.ModelForm):
-    name = forms.CharField(label='Название', required=False)
+    name = forms.CharField(label='Название', required=False, widget=forms.Textarea(attrs={'rows': 1}))
     lifetime = forms.DateField(label='Время жизни', widget=DateInput())
     is_unremovable = forms.BooleanField(label='Неудаляемый', required=False)
     participants = forms.CharField(label='Участники', required=False, widget=forms.Textarea(attrs={'rows': 1}))

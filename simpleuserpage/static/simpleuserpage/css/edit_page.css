@@ -78,10 +78,11 @@ button{
     display: none;
 }
 
-#id_description, #id_participants{
+#id_description, #id_participants, #id_name{
     background-color: #e5e5e5;
     border-radius: 15px;
     border: none;
+    height: 150px;
     padding: 5px;
     text-align: center;
     box-sizing: content-box;
