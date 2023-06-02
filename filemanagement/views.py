@@ -128,6 +128,19 @@ def download_video(request, id):
         return redirect('simpleuser_page')
 
 
+def download_protected_archive(request, id):
+    directory = DESTINATION
+    obj = ArchivesData.objects.get(id=id)
+    archive = os.path.join(directory, os.path.splitext(obj.code_name)[0], obj.code_name)
+    if os.path.isfile(archive):
+        with open(archive, 'rb') as fh:
+            response = FileResponse(fh.read())
+            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(archive)
+            return response
+    else:
+        return redirect('simpleuser_page')
+
+
 def download_archive(request, id):
     obj = ArchivesData.objects.get(id=id)
 
