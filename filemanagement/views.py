@@ -1,6 +1,8 @@
 import os
 import shutil
 import zipfile
+import xml.etree.ElementTree as Et
+
 from datetime import timedelta, date
 from enum import Enum
 from pathlib import Path
@@ -97,6 +99,50 @@ def unpack_zip_thread(request, id):
             archive_info.save()
             break
 
+    directory = os.path.join(DESTINATION, os.path.splitext(archive_info.code_name)[0], os.path.splitext(archive_info.code_name)[0])
+    file = 'events.xml'
+    file_path = os.path.join(directory, file)
+    if os.path.isfile(file_path):
+
+        tree = Et.parse(file_path)
+        root = tree.getroot()
+        conference_name = ''
+        participants_names = []
+        all_ids = []
+
+        for event in root.findall('event'):
+            if event.get('eventname') == 'ParticipantJoinEvent':
+                if event.find('role').text == 'MODERATOR':
+                    name = event.find('name').text
+                    participants_names.append(name)
+
+        for event in root.findall('event'):
+            if event.get('eventname') == 'ParticipantStatusChangeEvent':
+                if event.find('status').text == 'role':
+                    _id = event.find('userId').text
+                    all_ids.append(_id)
+
+        all_ids.sort()
+        filtered_ids = list(set(all_ids))
+
+        for _id in filtered_ids:
+            for event in root.findall('event'):
+                if event.get('eventname') == 'ParticipantJoinEvent':
+                    if event.find('userId').text == _id:
+                        name = event.find('name').text
+                        participants_names.append(name)
+
+        participants_names.sort()
+        filtered_participants_names = list(set(participants_names))
+        participants_names_string = ','.join(filtered_participants_names)
+
+        for meeting in root.findall('meeting'):
+            conference_name = meeting.get('name')
+        archive_info.name = conference_name
+        archive_info.participants = participants_names_string
+        archive_info.description = '-'
+        archive_info.save()
+
 
 def download_file(request, id, handout):
     directory = DESTINATION
@@ -134,7 +180,7 @@ def download_protected_archive(request, id):
     archive = os.path.join(directory, os.path.splitext(obj.code_name)[0], obj.code_name)
     if os.path.isfile(archive):
         with open(archive, 'rb') as fh:
-            response = FileResponse(fh.read())
+            response = FileResponse(open(archive, 'rb'))
             response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(archive)
             return response
     else:
