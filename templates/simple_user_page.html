@@ -91,7 +91,13 @@
     				<td>{{ row.id }}</td>
     				<td>{{ row.name }}</td>
     				<td>{{ row.event_date|date:"d-m-Y" }}</td>
-					<td>{{ row.lifetime|date:"d-m-Y" }}</td>
+					<td>
+						{% if row.is_unremovable == True %}
+						Бессрочно
+						{% else %}
+						{{ row.lifetime|date:"d-m-Y" }}
+						{% endif %}
+					</td>
     				<td>
 						{% if row.participants != '' %}
 						<div class="scrollable">
@@ -109,7 +115,8 @@
 						{% endif %}
 					</td>
     				<td class="handout"> {% if row.handout != '' %} {% for handout in row.handout_list %} <a href="{% url 'download_file' id=row.id handout=handout %}">{{ handout }}<br></a> {% endfor %} {% endif %} <br> <a class="add_file" href="{% url 'upload_file' id=row.id %}">+</a></td>
-    				<td><a href="{% url 'video_player' id=row.id %}" target="_blank">
+    				<td>
+						<a href="{% url 'video_player' id=row.id %}" target="_blank">
 						{% if row.unpacked == 0 %}
 						<a class="edit_link" href="{% url 'unpack_archive' id=row.id %}">Распаковать</a>
 						{% elif row.unpacked == 2 %}
@@ -119,7 +126,7 @@
 						{% endif %}
 						</a>
 					</td>
-					<td>{% if row.unpacked != 1 %}>-{% else %}<a href="{% url 'download_archive' id=row.id %}" target="_blank">Скачать</a>{% endif %}</td>
+					<td>{% if row.unpacked != 1 %}-{% else %}<a href="{% url 'download_archive' id=row.id %}" target="_blank">Скачать</a>{% endif %}</td>
 					{% if request.user.is_authenticated and request.user.is_staff %}
 					<td><a href="{% url 'download_protected_archive' id=row.id %}">{{ row.code_name }}</a></td>
 					<td class="edit_row" ><a class="edit_link" href="{% url 'edit_info' id=row.id %}">Редактировать</a></td>
