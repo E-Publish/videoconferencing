@@ -54,16 +54,14 @@ def show_archive_data(request):
 
 
 def update_unpacking_progress(request):
-    id = request.GET.get('id')
-    print(id)
-    progress = ArchivesData.objects.get(id=id)
-    data = {
-        'id': id,
-        'unpacked': progress.unpacked,
-        'recording': progress.recording
-    }
+    ids = request.GET.getlist('ids[]')
+    single_dict = {}
+    response_array = []
+    for id in ids:
+        single_dict = {'id': id, 'progress': ArchivesData.objects.get(id=id).unpacked, 'recording': ArchivesData.objects.get(id=id).recording}
+        response_array.append(single_dict)
 
-    return JsonResponse(data)
+    return JsonResponse(response_array, safe=False)
 
 
 def edit_info(request, id):
