@@ -7,6 +7,7 @@
 		<meta charset="UTF-8">
     	<title>Archive list</title>
 		<link rel="stylesheet" href="{% static 'simpleuserpage/css/simpleuserpage_style.css' %}">
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
 	{% if request.user.is_authenticated %}
 	<body>
@@ -115,16 +116,10 @@
 						{% endif %}
 					</td>
     				<td class="handout"> {% if row.handout != '' %} {% for handout in row.handout_list %} <a href="{% url 'download_file' id=row.id handout=handout %}">{{ handout }}<br></a> {% endfor %} {% endif %} <br> <a class="add_file" href="{% url 'upload_file' id=row.id %}">+</a></td>
-    				<td>
-						<a href="{% url 'video_player' id=row.id %}" target="_blank">
-						{% if row.unpacked == 0 %}
-						<a class="edit_link" href="{% url 'unpack_archive' id=row.id %}">Распаковать</a>
-						{% elif row.unpacked == 2 %}
-						<a class="edit_link">В процессе...</a>
-						{% else %}
-						{{ row.recording }}
-						{% endif %}
-						</a>
+    				<td id="unpacking-progress" data-id="{{ row.id }}">
+						<a id="recording" href="{% url 'video_player' id=row.id %}" target="_blank" style="display: none">{{ row.recording }}</a>
+						<a id="unpack-archive" class="edit_link" href="{% url 'unpack_archive' id=row.id %}" style="display: none">Распаковать</a>
+						<a id="in-process" class="edit_link" style="display: none">В процессе...</a>
 					</td>
 					<td>{% if row.unpacked != 1 %}-{% else %}<a href="{% url 'download_archive' id=row.id %}" target="_blank">Скачать</a>{% endif %}</td>
 					{% if request.user.is_authenticated and request.user.is_staff %}
@@ -178,10 +173,34 @@
 
 	{% block javascript %}
 		<script>
-    		setInterval(function() {
-    		  location.reload();
-    		}, 5000);
-  		</script>
+    		var progress_value = null;
+
+        	setInterval(update_unpacking_progress, 1000);
+
+        	function update_unpacking_progress() {
+        	    $("#recording").hide();
+
+        	    var id = $("#unpacking-progress").data("id");
+        	    $.ajax({
+        	        url: "{% url 'update_unpacking_progress' %}",
+        	        data: {id: id},
+        	        success: function(data) {
+        	            console.log("Данные успешно получены:", data);
+        	            progress_value = data.unpacked;
+        	        }
+        	    });
+
+        	    if (progress_value === null) {
+        	        console.log("Прогресс распаковки еще не загружен");
+        	    } else if (progress_value == 0) {
+        	    	$("#unpack-archive").show();
+        	    } else if (progress_value == 2) {
+        	    	$("#in-process").show();
+        	    } else {
+        	        $("#recording").show();
+        	    }
+        	}
+		</script>
 	{% endblock %}
 	</body>
 

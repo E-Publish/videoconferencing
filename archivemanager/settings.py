@@ -68,10 +68,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'acarchiveinfo',
-        'USER': 'videoarc',
-        'PASSWORD': 'azz78znppcyLph',
-        'HOST': '172.16.1.28',
-        'PORT': '3307',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         }
@@ -140,8 +140,8 @@ EMAIL_USE_SSL = True
 MEDIA_ROOT = '../EpublishPath'
 
 
-BBB_VIDEO = '/opt/videoconferencing.epublish.ru/'
-DESTINATION = '/opt/resctrict/'
+BBB_VIDEO = 'C:/Users/kleme/Documents/EpublishPath/common'
+DESTINATION = 'C:/Users/kleme/Documents/EpublishPath/restrict'
 
 
 ZIP_PASSWORD = 'HiperbolA'
