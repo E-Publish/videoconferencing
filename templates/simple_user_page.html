@@ -12,8 +12,14 @@
 	{% if request.user.is_authenticated %}
 	<body onload="update_unpacking_progress()">
 		<div class="header">
-			<a class="personal_account" href="{% url 'admin_panel' %}">{{ request.user.get_username }}</a>
+			{% if request.user.is_authenticated and request.user.is_staff %}
+			<a class="personal_account" href="{% url 'admin_panel' %}">Управление пользователями</a>
+			<h3 class="longin_text" >{{ request.user.get_username }}</h3>
 			<a class="logout_btn" href="/accounts/logout">Выход</a>
+			{% else %}
+			<h3 class="longin_text" style="margin-left: 80%;">{{ request.user.get_username }}</h3>
+			<a class="logout_btn" href="/accounts/logout">Выход</a>
+			{% endif %}
 		</div>
 		<div class="pagination">
 			<div class="paginator">
@@ -173,11 +179,6 @@
     					<td class="handout"> {% if row.handout != '' %} {% for handout in row.handout_list %} <a href="{% url 'download_file' id=row.id handout=handout %}">{{ handout }}<br></a> {% endfor %} {% endif %} <br> <a class="add_file" href="{% url 'upload_file' id=row.id %}">+</a></td>
     					<td><a href="{% url 'video_player' id=row.id %}" target="_blank">{{ row.recording }}</a></td>
 						<td>{% if row.unpacked != 1 %}-{% else %}<a href="{% url 'download_archive' id=row.id %}" target="_blank">Скачать</a>{% endif %}</td>
-						{% if request.user.is_authenticated and request.user.is_staff %}
-						<td><a href="{% url 'download_protected_archive' id=row.id %}">{{ row.code_name }}</a></td>
-						<td class="edit_row" ><a class="edit_link" href="{% url 'edit_info' id=row.id %}">Редактировать</a></td>
-						<td class="delete_row"><a class="delete_link" href="{% url 'delete_info' id=row.id %}">Удалить</a></td>
-						{% endif %}
     				</tr>
 					{% endif %}
 				{% endif %}
