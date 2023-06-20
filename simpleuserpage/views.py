@@ -1,12 +1,10 @@
 import os
-from pathlib import Path
-from typing import Generator, IO
 
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.core.paginator import *
 from django.db.models import Q
-from django.http import HttpResponse, StreamingHttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.crypto import get_random_string
 
@@ -51,17 +49,6 @@ def show_archive_data(request):
     page_number = request.GET.get('page')
     page_obj = paginated_data.get_page(page_number)
     return render(request, 'simple_user_page.html', {'page_obj': page_obj})
-
-
-def update_unpacking_progress(request):
-    ids = request.GET.getlist('ids[]')
-    single_dict = {}
-    response_array = []
-    for id in ids:
-        single_dict = {'id': id, 'progress': ArchivesData.objects.get(id=id).unpacked, 'recording': ArchivesData.objects.get(id=id).recording}
-        response_array.append(single_dict)
-
-    return JsonResponse(response_array, safe=False)
 
 
 def edit_info(request, id):
@@ -190,66 +177,10 @@ def sort_table(request, field):
 
 
 def video_player(request, id):
-    _video = get_object_or_404(ArchivesData, id=id)
-    return render(request, "video_player.html", {"video": _video})
-
-
-def video_streaming(request, id):
-    file, status_code, content_length, content_range = open_file(request, id)
-    response = StreamingHttpResponse(file, status=status_code, content_type='video/mp4')
-
-    response['Accept-Ranges'] = 'bytes'
-    response['Content-Length'] = str(content_length)
-    response['Cache-Control'] = 'no-cache'
-    response['Content-Range'] = content_range
+    obj = ArchivesData.objects.get(id=id)
+    directory = os.path.join(DESTINATION, os.path.splitext(obj.code_name)[0], os.path.splitext(obj.code_name)[0])
+    video = obj.recording
+    file_path = os.path.join(directory, video)
+    response = HttpResponse(open(file_path, 'rb').read(), content_type='video/mp4')
+    response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
     return response
-
-
-def ranged(
-        file: IO[bytes],
-        start: int = 0,
-        end: int = None,
-        block_size: int = 8192,
-) -> Generator[bytes, None, None]:
-    consumed = 0
-
-    file.seek(start)
-    while True:
-        data_length = min(block_size, end - start - consumed) if end else block_size
-        if data_length <= 0:
-            break
-        data = file.read(data_length)
-        if not data:
-            break
-        consumed += data_length
-        yield data
-
-    if hasattr(file, 'close'):
-        file.close()
-
-
-def open_file(request, video_pk: int) -> tuple:
-    _video = get_object_or_404(ArchivesData, pk=video_pk)
-
-    directory = os.path.join(DESTINATION, os.path.splitext(_video.code_name)[0], os.path.splitext(_video.code_name)[0])
-    video = _video.recording
-    path = os.path.join(directory, video)
-
-    file = open(path, 'rb')
-    file_size = os.path.getsize(path)
-
-    content_length = file_size
-    status_code = 200
-    content_range = request.headers.get('range')
-
-    if content_range is not None:
-        content_ranges = content_range.strip().lower().split('=')[-1]
-        range_start, range_end, *_ = map(str.strip, (content_ranges + '-').split('-'))
-        range_start = max(0, int(range_start)) if range_start else 0
-        range_end = min(file_size - 1, int(range_end)) if range_end else file_size - 1
-        content_length = (range_end - range_start) + 1
-        file = ranged(file, start=range_start, end=range_end + 1)
-        status_code = 206
-        content_range = f'bytes {range_start}-{range_end}/{file_size}'
-
-    return file, status_code, content_length, content_range
