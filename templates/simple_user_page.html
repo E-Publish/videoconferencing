@@ -10,7 +10,7 @@
 		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
 	{% if request.user.is_authenticated %}
-	<body>
+	<body onload="update_unpacking_progress()">
 		<div class="header">
 			<a class="personal_account" href="{% url 'admin_panel' %}">{{ request.user.get_username }}</a>
 			<a class="logout_btn" href="/accounts/logout">Выход</a>
@@ -139,7 +139,7 @@
     							color: black;"
 						>В процессе...</a>
 					</td>
-					<td>{% if row.unpacked != 1 %}-{% else %}<a href="{% url 'download_archive' id=row.id %}" target="_blank">Скачать</a>{% endif %}</td>
+					<td class="download-archive"><a href="{% url 'download_archive' id=row.id %}" target="_blank" style="display: none;">Скачать</a></td>
 					{% if request.user.is_authenticated and request.user.is_staff %}
 					<td><a href="{% url 'download_protected_archive' id=row.id %}">{{ row.code_name }}</a></td>
 					<td class="edit_row" ><a class="edit_link" href="{% url 'edit_info' id=row.id %}">Редактировать</a></td>
@@ -192,8 +192,10 @@
 		<script>
 
     		var progress_value = null;
+			if ($('.unpacking-progress').length > 0) {
+			  setInterval(update_unpacking_progress, 20000);
+			}
 
-        	setInterval(update_unpacking_progress, 20000);
 
         	function update_unpacking_progress() {
         	    $("#recording").hide();
@@ -230,15 +232,18 @@
 						  		$cell.children(".recording").hide();
 								$cell.children(".in-process").hide();
 						  	  	$cell.children('.unpack-archive').show();
+						  	  	$cell.closest('tr').find('.download-archive').children('a').hide();
 						  	} else if (progress == 2) {
 						  		$cell.children(".recording").hide();
 								$cell.children(".unpack-archive").hide();
 						  	  	$cell.children('.in-process').show();
+						  	  	$cell.closest('tr').find('.download-archive').children('a').hide();
 						  	} else {
 								$cell.children(".unpack-archive").hide();
 								$cell.children(".in-process").hide();
 						  	  	$cell.children('.recording').show();
 						  	  	$cell.children('.recording').text(recording);
+						  	  	$cell.closest('tr').find('.download-archive').children('a').show();
 						  	}
 						});
             		}
