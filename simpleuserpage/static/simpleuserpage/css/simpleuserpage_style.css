@@ -214,17 +214,6 @@ table tbody tr:last-child td:last-child{
     font-family: Geneva, Arial, Helvetica, sans-serif;
 }
 
-.longin_text{
-    margin-top: 1%;
-    margin-left: 65%;
-    vertical-align: top;
-    padding: 10px;
-    text-decoration: none;
-    color: black;
-    font-weight: lighter;
-    font-family: Geneva, Arial, Helvetica, sans-serif;
-}
-
 .logout_btn{
     margin: auto;
     margin-top: 1%;
