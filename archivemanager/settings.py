@@ -148,3 +148,4 @@ ZIP_PASSWORD = 'HiperbolA'
 
 CSRF_COOKIE_DOMAIN = '.epublish.ru'
 CSRF_TRUSTED_ORIGINS = ['https://videoconferencing.epublish.ru']
+
