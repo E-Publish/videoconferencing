@@ -14,8 +14,10 @@ class ArchivesData(models.Model):
     handout = models.TextField()
     recording = models.TextField()
     unpacked = models.SmallIntegerField(default=0)
+    access = models.SmallIntegerField(default=0)
+    users_list = models.TextField(default=0)
+    access_by_link = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'conference'
-
 

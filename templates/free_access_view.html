@@ -1,0 +1,29 @@
+{% load static%}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Link Access</title>
+    <link rel="stylesheet" href="{% static 'simpleuserpage/css/free_access_style.css' %}">
+</head>
+    <body>
+        <h1 class="name">{{ data.name }}</h1>
+        <div class="container">
+            <h3>Дата проведения</h3>
+            {{ data.event_date }}
+        </div>
+        <div class="container">
+            <h3>Раздаточный материал</h3>
+            <div class="scrollable">
+                {% for handout in data.handout_list %} <a href="{% url 'download_file' id=data.id handout=handout %}">{{ handout }}<br></a> {% endfor %}
+            </div>
+        </div>
+        <div class="container">
+            <h3>Запись</h3>
+            <a class="recording" href="{% url 'video_player' id=data.id %}" target="_blank"><h4 class="video">{{ data.recording }}</h4></a>
+        </div>
+        <div class="container">
+            <h3>Скачать все</h3>
+            <a href="{% url 'download_archive' id=data.id %}" target="_blank">Скачать</a>
+        </div>
+    </body>
+</html>

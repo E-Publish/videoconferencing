@@ -20,7 +20,7 @@ from filemanagement.views import upload_file, unpack_zip, download_file, downloa
     download_protected_archive
 from loginwindow.views import login_page, redirect_to_filemanager
 from simpleuserpage.views import show_archive_data, edit_info, admin_panel, edit_user_info, delete_user, \
-    add_user, search, sort_table, video_player, video_streaming, update_unpacking_progress
+    add_user, search, sort_table, video_player, video_streaming, update_unpacking_progress, link_access_archive
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -45,4 +45,5 @@ urlpatterns = [
     path('video/<int:id>/', video_player, name='video_player'),
     path('stream/<int:id>/', video_streaming, name='stream'),
     path('update_info/', update_unpacking_progress, name='update_unpacking_progress'),
+    path('free-access/link-access/<int:id>', link_access_archive, name='link_access_archive'),
 ]

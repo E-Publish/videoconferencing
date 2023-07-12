@@ -215,8 +215,9 @@ table tbody tr:last-child td:last-child{
 }
 
 .longin_text{
+    position: absolute;
+    margin-left: 80%;
     margin-top: 1%;
-    margin-left: 65%;
     vertical-align: top;
     padding: 10px;
     text-decoration: none;
@@ -306,14 +307,56 @@ table tbody tr:last-child td:last-child{
 }
 
 .scrollable::-webkit-scrollbar {
-  width: 10px;
+    width: 10px;
 }
 
 .scrollable::-webkit-scrollbar-track {
-  background: none;
+    background: none;
 }
 
 .scrollable::-webkit-scrollbar-thumb {
-  background-color: #F48120;
-  border-radius: 20px;
+    background-color: #F48120;
+    border-radius: 20px;
+}
+
+.copy_link{
+    font-family: Geneva, Arial, Helvetica, sans-serif;
+    text-decoration: none;
+    font-weight: bold;
+    color: black;
+    border-radius: 15px;
+    border: none;
+    padding: 5px;
+    background-color: #D0D0D0;
+}
+
+.copy_link:hover{
+    border-radius: 15px;
+    border: none;
+    padding: 5px;
+    color: #F48120;
+}
+
+.recording{
+    display: none;
+	font-family: Geneva, Arial, Helvetica, sans-serif;
+    text-decoration: none;
+    font-weight: bold;
+    color: black;
+}
+
+.unpack-archive{
+    display: none;
+	font-family: Geneva, Arial, Helvetica, sans-serif;
+    text-decoration: none;
+    font-weight: bold;
+    color: black;
+}
+
+.in-process{
+    display: none;
+	font-family: Geneva, Arial, Helvetica, sans-serif;
+    text-decoration: none;
+    font-weight: bold;
+    color: black;
 }

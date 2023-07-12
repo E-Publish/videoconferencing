@@ -2,11 +2,11 @@ import os
 from pathlib import Path
 from typing import Generator, IO
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.mail import send_mail
 from django.core.paginator import *
 from django.db.models import Q
-from django.http import HttpResponse, StreamingHttpResponse, JsonResponse
+from django.http import HttpResponse, StreamingHttpResponse, JsonResponse, HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.crypto import get_random_string
 
@@ -14,20 +14,29 @@ from archivemanager import settings
 from archivemanager.settings import DESTINATION
 from filemanagement.views import find_new_files, delete_by_lifetime
 from .models import ArchivesData
-from .forms import EditArchiveInfoForm, EditUserInfoForm, AddUserForm
+from .forms import EditArchiveInfoForm, EditUserInfoForm, AddUserForm, TechnicalSupportAddUserForm, \
+    TechnicalSupportEditUserInfoForm, LocalAdminAddUserForm
 
 
 def show_archive_data(request):
     if request.user.is_staff:
         find_new_files()
         delete_by_lifetime()
-    all_data = ArchivesData.objects.all().order_by('id')
+
+    group_names = request.user.groups.values_list('name', flat=True)
+
+    if request.user.is_authenticated and request.user.is_staff:
+        all_data = ArchivesData.objects.all().order_by('id')
+    elif "technical_support" in group_names:
+        all_data = ArchivesData.objects.all().order_by('id')
+    elif "local_admin" in group_names:
+        all_data = ArchivesData.objects.filter(access=request.user.id).order_by('id')
+    elif "common_user" in group_names:
+        all_data = ArchivesData.objects.filter(users_list__contains=request.user.id).order_by('id')
 
     show_recorded = request.GET.get('show_recorded')
     if show_recorded:
         all_data = ArchivesData.objects.exclude(recording="")
-    else:
-        pass
 
     date_from = request.GET.get('date_from')
     date_to = request.GET.get('date_to')
@@ -50,7 +59,18 @@ def show_archive_data(request):
     paginated_data = Paginator(all_data, request.GET.get('lines_per_page', 50))
     page_number = request.GET.get('page')
     page_obj = paginated_data.get_page(page_number)
-    return render(request, 'simple_user_page.html', {'page_obj': page_obj})
+    return render(request, 'simple_user_page.html', {'page_obj': page_obj, 'group': group_names})
+
+
+def link_access_archive(request, id):
+    archive_info = get_object_or_404(ArchivesData, id=id)
+    archive_info.handout_list = archive_info.handout.split(',')
+    archive_info.participants_list = archive_info.participants.split(',')
+
+    if archive_info.access_by_link:
+        return render(request, 'free_access_view.html', {'data': archive_info})
+    else:
+        return HttpResponseNotFound("Запись недоступна, обратитесь к ведущему")
 
 
 def update_unpacking_progress(request):
@@ -58,14 +78,23 @@ def update_unpacking_progress(request):
     single_dict = {}
     response_array = []
     for id in ids:
-        single_dict = {'id': id, 'progress': ArchivesData.objects.get(id=id).unpacked, 'recording': ArchivesData.objects.get(id=id).recording}
+        single_dict = {
+            'id': id,
+            'progress': ArchivesData.objects.get(id=id).unpacked,
+            'recording': ArchivesData.objects.get(id=id).recording,
+            'participants': ArchivesData.objects.get(id=id).participants.split(','),
+            'name': ArchivesData.objects.get(id=id).name,
+            'description': ArchivesData.objects.get(id=id).description
+        }
         response_array.append(single_dict)
 
     return JsonResponse(response_array, safe=False)
 
 
 def edit_info(request, id):
-    if request.user.is_authenticated and request.user.is_staff:
+    group_names = request.user.groups.values_list('name', flat=True)
+
+    if request.user.is_authenticated and request.user.is_staff or "technical_support" or "local_admin" in group_names:
         archive_info = get_object_or_404(ArchivesData, id=id)
         if request.method == "POST":
             form = EditArchiveInfoForm(request.POST, instance=archive_info)
@@ -75,41 +104,71 @@ def edit_info(request, id):
                 return redirect('simpleuser_page')
         else:
             form = EditArchiveInfoForm(instance=archive_info)
-        return render(request, 'edit_info.html', {'form': form})
+        return render(request, 'edit_info.html', {'form': form, 'group': group_names})
     else:
         return redirect('simpleuser_page', permanent=True)
 
 
 def admin_panel(request):
+    group_names = request.user.groups.values_list('name', flat=True)
+    user_group = request.user.groups.values_list('name', flat=True)
+
     if request.user.is_authenticated and request.user.is_staff:
         users = User.objects.all()
+
+    elif request.user.is_authenticated and "technical_support" in group_names:
+        users = User.objects.filter(groups__name='local_admin').order_by('id')
+
+    elif request.user.is_authenticated and "local_admin" in group_names:
+        users = User.objects.filter(groups__name='common_user').order_by('id')
+    else:
+        return redirect('simpleuser_page')
+
+    if request.user.is_authenticated and request.user.is_staff or "technical_support" or "local_admin" in group_names:
+
+        for user in users:
+            groups = user.groups.all()
+            group_names = [group.name for group in groups]
+            user.group_names = group_names
+
         # здесь указываете количество строк на странице по умолчанию
         paginated_data = Paginator(users, request.GET.get('lines_per_page', 50))
         page_number = request.GET.get('page')
         page_obj = paginated_data.get_page(page_number)
-        return render(request, 'admin_panel.html', {'users': page_obj})
+
+        return render(request, 'admin_panel.html', {'users': page_obj, 'group': user_group})
     else:
         return redirect('simpleuser_page')
 
 
 def edit_user_info(request, id):
-    if request.user.is_authenticated and request.user.is_staff:
+    group_names = request.user.groups.values_list('name', flat=True)
+
+    if request.user.is_authenticated and request.user.is_staff or "local_admin" in group_names:
         user_info = get_object_or_404(User, id=id)
         if request.method == "POST":
             form = EditUserInfoForm(request.POST, instance=user_info)
             if form.is_valid():
                 user_info = form.save(commit=False)
+                groups = form.cleaned_data['groups']
+                if isinstance(groups, Group):
+                    groups = [groups]
+                user_info.groups.set(groups)
                 user_info.save()
                 return redirect('admin_panel')
         else:
-            form = EditUserInfoForm(instance=user_info)
-        return render(request, 'edit_user_info.html', {'form': form})
+            if request.user.is_staff:
+                form = EditUserInfoForm(instance=user_info)
+            elif "technical_support" or "local_admin" in group_names:
+                form = TechnicalSupportEditUserInfoForm(instance=user_info)
+        return render(request, 'edit_user_info.html', {'form': form, 'group': group_names})
     else:
         return redirect('admin_panel', permanent=True)
 
 
 def delete_user(request, id):
-    if request.user.is_authenticated and request.user.is_staff:
+    group_names = request.user.groups.values_list('name', flat=True)
+    if request.user.is_authenticated and request.user.is_staff or "technical_support" or "local_admin" in group_names:
         obj_to_delete = User.objects.get(id=id)
         if request.user.id != obj_to_delete:
             obj_to_delete.delete()
@@ -121,31 +180,51 @@ def delete_user(request, id):
 
 
 def add_user(request):
-    if request.method == 'POST':
-        form = AddUserForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = get_random_string(length=10, allowed_chars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*(-_=+)')
-            first_name = form.cleaned_data.get('first_name')
-            last_name = form.cleaned_data.get('last_name')
-            email = form.cleaned_data.get('email')
-            is_staff = form.cleaned_data.get('is_staff')
+    group_names = request.user.groups.values_list('name', flat=True)
+    if request.user.is_authenticated and request.user.is_staff or "technical_support" or "local_admin" in group_names:
+        if request.method == 'POST':
+            form = AddUserForm(request.POST)
+            if form.is_valid():
+                username = form.cleaned_data.get('username')
+                password = get_random_string(length=10, allowed_chars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*(-_=+)')
+                print(f"Пароль: {password}")
+                first_name = form.cleaned_data.get('first_name')
+                last_name = form.cleaned_data.get('last_name')
+                email = form.cleaned_data.get('email')
+                is_staff = form.cleaned_data.get('is_staff')
 
-            User.objects.create_user(username=username, password=password, first_name=first_name, last_name=last_name,
-                                     email=email, is_staff=is_staff)
-            send_mail(
-                'Регистрация в корпоративном файловом менеджере',
-                f'Вам был создан аккаунт на Epublish File Manager\nvideoconferencing.epublish.ru\nЛогин: {username}\n'
-                f'Пароль: {password}\n',
-                settings.EMAIL_HOST_USER,
-                [f'{email}'],
-                fail_silently=False
-            )
-            return redirect('admin_panel')
+                User.objects.create_user(username=username, password=password, first_name=first_name, last_name=last_name,
+                                         email=email, is_staff=is_staff)
+
+                user = User.objects.get(email=email)
+                groups = form.cleaned_data['groups']
+                if isinstance(groups, Group):
+                    groups = [groups]
+                user.groups.set(groups)
+
+                send_mail(
+                    'Регистрация в корпоративном файловом менеджере',
+                    f'Вам был создан аккаунт на Epublish File Manager\nvideoconferencing.epublish.ru\nЛогин: {username}\n'
+                    f'Пароль: {password}\n',
+                    settings.EMAIL_HOST_USER,
+                    [f'{email}'],
+                    fail_silently=False
+                )
+                return redirect('admin_panel')
+        else:
+            if "technical_support" in group_names:
+                form = TechnicalSupportAddUserForm()
+            else:
+                form = AddUserForm()
+            if request.user.is_staff:
+                form = AddUserForm()
+            elif "technical_support" in group_names:
+                form = TechnicalSupportAddUserForm()
+            elif "local_admin" in group_names:
+                form = LocalAdminAddUserForm()
+        return render(request, 'add_user.html', {'form': form, 'group': group_names})
     else:
-        form = AddUserForm()
-    return render(request, 'add_user.html', {'form': form})
-
+        return redirect('simpleuser_page')
 
 def search(request):
     query = request.GET.get('q')

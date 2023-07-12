@@ -7,7 +7,6 @@
 	    <title>Administrator</title>
 	</head>
 	<body>
-	    {% if request.user.is_authenticated and request.user.is_staff %}
 		<div class="header">
 			<h4 class="personal_account">{{ request.user.get_username }}</h4>
 			<a class="logout_btn" href="{% url 'simpleuser_page' %}">Назад</a>
@@ -50,7 +49,9 @@
 				<th>Имя пользователя</th>
 				<th>Фамилия пользователя</th>
 				<th>Email пользователя</th>
-				<th>Администратор</th>
+				{% if not "local_admin" in group %}
+				<th>Роль</th>
+				{% endif %}
 				<th class="edit_row">Редактировать</th>
 				<th class="delete_row">Удалить</th>
 			</tr>
@@ -63,13 +64,14 @@
 				<td>{{ user.first_name }}</td>
 				<td>{{ user.last_name }}</td>
 				<td>{{ user.email }}</td>
-				<td>{{ user.is_staff }}</td>
+				{% if not "local_admin" in group %}
+				<td>{{ user.group_names|join:", " }}</td>
+				{% endif %}
 				<td class="edit_row"><a class="edit_link" href="{% url 'edit_user_info' id=user.id %}">Редактировать</a></td>
 				<td class="delete_row"><a class="delete_link" href="{% url 'delete_user' id=user.id %}">Удалить</a></td>
 			</tr>
 			{% endfor %}
 			</tbody>
 		</table>
-	    {% endif %}
 	</body>
 </html>
