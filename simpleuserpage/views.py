@@ -3,10 +3,11 @@ from pathlib import Path
 from typing import Generator, IO
 
 from django.contrib.auth.models import User, Group
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.mail import send_mail
 from django.core.paginator import *
 from django.db.models import Q
-from django.http import HttpResponse, StreamingHttpResponse, JsonResponse, HttpResponseNotFound
+from django.http import HttpResponse, StreamingHttpResponse, JsonResponse, HttpResponseNotFound, FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.crypto import get_random_string
 
@@ -15,7 +16,7 @@ from archivemanager.settings import DESTINATION
 from filemanagement.views import find_new_files, delete_by_lifetime
 from .models import ArchivesData
 from .forms import EditArchiveInfoForm, EditUserInfoForm, AddUserForm, TechnicalSupportAddUserForm, \
-    TechnicalSupportEditUserInfoForm, LocalAdminAddUserForm
+    TechnicalSupportEditUserInfoForm, LocalAdminAddUserForm, LocalAdminEditUserInfoForm
 
 
 def show_archive_data(request):
@@ -159,8 +160,10 @@ def edit_user_info(request, id):
         else:
             if request.user.is_staff:
                 form = EditUserInfoForm(instance=user_info)
-            elif "technical_support" or "local_admin" in group_names:
+            elif "technical_support" in group_names:
                 form = TechnicalSupportEditUserInfoForm(instance=user_info)
+            elif "local_admin" in group_names:
+                form = LocalAdminEditUserInfoForm(instance=user_info)
         return render(request, 'edit_user_info.html', {'form': form, 'group': group_names})
     else:
         return redirect('admin_panel', permanent=True)
@@ -332,3 +335,12 @@ def open_file(request, video_pk: int) -> tuple:
         content_range = f'bytes {range_start}-{range_end}/{file_size}'
 
     return file, status_code, content_length, content_range
+
+
+def download_pdf(request, instruction):
+    print(instruction)
+    file_path = f'simpleuserpage/static/simpleuserpage/pdf/{instruction}.pdf'
+    if os.path.exists(file_path):
+        return FileResponse(open(file_path, 'rb'), as_attachment=True)
+    else:
+        return HttpResponse("Файл не найден")

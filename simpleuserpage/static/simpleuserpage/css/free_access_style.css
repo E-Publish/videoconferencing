@@ -31,6 +31,7 @@ h1{
     width: 230px;
     max-height: 70px;
     max-width: 500px;
+
 }
 
 .scrollable::-webkit-scrollbar {
@@ -52,4 +53,12 @@ label {
     text-align: center;
     vertical-align: middle;
     background: #fff;
+}
+
+.plate{
+    background-color: #e5e5e5;
+    margin: auto;
+    padding: 3%;
+    width: 80%;
+    border-radius: 30px;
 }

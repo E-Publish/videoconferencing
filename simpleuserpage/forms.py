@@ -77,6 +77,31 @@ class TechnicalSupportEditUserInfoForm(forms.ModelForm):
     first_name = forms.CharField(label='Имя', required=False)
     last_name = forms.CharField(label='Фамилия', required=False)
     email = forms.EmailField(label='Электронная почта', required=False)
+    groups = forms.ModelChoiceField(
+        queryset=Group.objects.filter(name='local_admin'),
+        label='Роль',
+        required=False,
+        widget=forms.HiddenInput(),
+        initial=Group.objects.get(name='local_admin')
+    )
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email')
+
+
+class LocalAdminEditUserInfoForm(forms.ModelForm):
+    username = forms.CharField(label='Логин', required=False)
+    first_name = forms.CharField(label='Имя', required=False)
+    last_name = forms.CharField(label='Фамилия', required=False)
+    email = forms.EmailField(label='Электронная почта', required=False)
+    groups = forms.ModelChoiceField(
+        queryset=Group.objects.filter(name='common_user'),
+        label='Роль',
+        required=False,
+        widget=forms.HiddenInput(),
+        initial=Group.objects.get(name='common_user')
+    )
 
     class Meta:
         model = User

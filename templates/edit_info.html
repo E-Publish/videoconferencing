@@ -27,11 +27,10 @@
 
                 document.getElementById('id_is_unremovable').style.display = 'none';
                 document.querySelector('label[for="id_is_unremovable"]').style.display = 'none';
-            {% endif %}
 
-            {% if "technical_support" in group or request.user.is_staff %}
+            {% elif "technical_support" in group or request.user.is_staff %}
                 document.getElementById('id_users_list').style.display = 'none';
-                document.querySelector('label[for="id_users_list"]').style.display = 'none';
+                document.querySelector('legend').style.display = 'none';
 
                 document.getElementById('id_access_by_link').style.display = 'none';
                 document.querySelector('label[for="id_access_by_link"]').style.display = 'none';
@@ -87,6 +86,8 @@
         </script>
         {% endblock %}
     </body>
+
+
 {% endblock %}
 </html>
 {% endif %}
