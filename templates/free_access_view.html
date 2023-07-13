@@ -14,7 +14,7 @@
         <div class="container">
             <h3>Раздаточный материал</h3>
             <div class="scrollable">
-                {% for handout in data.handout_list %} <a href="{% url 'download_file' id=data.id handout=handout %}">{{ handout }}<br></a> {% endfor %}
+                {% if data.handout != '' %} {% for handout in data.handout_list %} <a href="{% url 'download_file' id=data.id handout=handout %}">{{ handout }}<br></a> {% endfor %} {% endif %}
             </div>
         </div>
         <div class="container">
