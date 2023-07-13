@@ -16,7 +16,7 @@
 			<a class="personal_account" href="{% url 'admin_panel' %}">Управление пользователями</a>
 			{% endif %}
 			<h3 class="login_text">{{ request.user.get_username }}</h3>
-			<a class="instruction" href="{% url 'download_pdf' instruction=group.0 %}">&#63;</a>
+			<a class="instruction" href="{% url 'download_pdf' instruction=instruction %}">&#63;</a>
 			<a class="logout_btn" href="/accounts/logout">Выход</a>
 		</div>
 		<div class="pagination">
