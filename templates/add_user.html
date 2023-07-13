@@ -1,6 +1,6 @@
 {% load static%}
 
-{% if request.user.is_authenticated and request.user.is_staff %}
+{% if request.user.is_authenticated and request.user.is_staff or "technical_support" or "local_admin" in group %}
 <html>
 {% block content %}
     <body>

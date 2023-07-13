@@ -1,5 +1,6 @@
 {% load static%}
-{% if request.user.is_authenticated and request.user.is_staff %}
+{% if request.user.is_authenticated and request.user.is_staff or "technical_support" or "local_admin" in group %}
+
 <html>
 {% block content %}
     <body>
@@ -17,6 +18,25 @@
 
         {% block javascript %}
         <script>
+            {% if "local_admin" in group %}
+                document.getElementById('id_is_private').style.display = 'none';
+                document.querySelector('label[for="id_is_private"]').style.display = 'none';
+
+                document.getElementById('id_access').style.display = 'none';
+                document.querySelector('label[for="id_access"]').style.display = 'none';
+
+                document.getElementById('id_is_unremovable').style.display = 'none';
+                document.querySelector('label[for="id_is_unremovable"]').style.display = 'none';
+            {% endif %}
+
+            {% if "technical_support" in group or request.user.is_staff %}
+                document.getElementById('id_users_list').style.display = 'none';
+                document.querySelector('label[for="id_users_list"]').style.display = 'none';
+
+                document.getElementById('id_access_by_link').style.display = 'none';
+                document.querySelector('label[for="id_access_by_link"]').style.display = 'none';
+            {% endif %}
+
             (function() {
               var checkbox = document.getElementById('id_is_unremovable');
               var lifetimeInput = document.getElementById('id_lifetime');
@@ -37,6 +57,30 @@
                 else {
                   lifetimeInput.style.display = 'block';
                   lifetimeLabel.style.display = 'block';
+                }
+              });
+            })();
+
+            (function() {
+              var accessCheckbox = document.getElementById('id_is_private');
+              var accessInput = document.getElementById('id_access');
+              var accessLabel = document.querySelector('label[for="id_access"]');
+
+
+              if (accessCheckbox.checked) {
+                accessInput.style.display = 'none';
+                accessLabel.style.display = 'none';
+              }
+
+              // обработчик изменения состояния флажка
+              accessCheckbox.addEventListener('change', function() {
+                if (accessCheckbox.checked) {
+                  accessInput.style.display = 'none';
+                  accessLabel.style.display = 'none';
+                }
+                else {
+                  accessInput.style.display = 'block';
+                  accessLabel.style.display = 'block';
                 }
               });
             })();

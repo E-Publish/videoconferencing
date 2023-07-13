@@ -12,14 +12,11 @@
 	{% if request.user.is_authenticated %}
 	<body onload="update_unpacking_progress()">
 		<div class="header">
-			{% if request.user.is_authenticated and request.user.is_staff %}
+			{% if not "common_user" in group or request.user.is_staff %}
 			<a class="personal_account" href="{% url 'admin_panel' %}">Управление пользователями</a>
-			<h3 class="longin_text" >{{ request.user.get_username }}</h3>
-			<a class="logout_btn" href="/accounts/logout">Выход</a>
-			{% else %}
-			<h3 class="longin_text" style="margin-left: 80%;">{{ request.user.get_username }}</h3>
-			<a class="logout_btn" href="/accounts/logout">Выход</a>
 			{% endif %}
+			<h3 class="longin_text">{{ request.user.get_username }}</h3>
+			<a class="logout_btn" href="/accounts/logout">Выход</a>
 		</div>
 		<div class="pagination">
 			<div class="paginator">
@@ -83,20 +80,29 @@
     				<th>Описание</th>
     				<th>Раздаточный материал</th>
     				<th>Запись вебинара</th>
-					<th>Ссылки</th>
+					<th>Файлы</th>
 					{% if request.user.is_authenticated and request.user.is_staff %}
 					<th>Название файла</th>
 					<th class="edit_row" >Редактирование</th>
 					<th class="delete_row">Удаление</th>
 					{% endif %}
+					{% if "technical_support" in group %}
+					<th>Название файла</th>
+					<th class="edit_row" >Редактирование</th>
+					{% endif %}
+					{% if "local_admin" in group %}
+					<th class="edit_row" >Редактирование</th>
+					{% endif %}
+					{% if "local_admin" in group %}
+					<th>Ссылка</th>
+					{% endif %}
     			</tr>
     		</thead>
     		<tbody>
     			{% for row in page_obj %}
-				{% if request.user.is_authenticated and request.user.is_staff %}
     			<tr {% if row.description == '' %} style="background-color: #E39163;" {% endif %}>
     				<td>{{ row.id }}</td>
-    				<td>{{ row.name }}</td>
+    				<td class="archive-name"></td>
     				<td>{{ row.event_date|date:"d-m-Y" }}</td>
 					<td>
 						{% if row.is_unremovable == True %}
@@ -105,83 +111,35 @@
 						{{ row.lifetime|date:"d-m-Y" }}
 						{% endif %}
 					</td>
-    				<td>
-						{% if row.participants != '' %}
-						<div class="scrollable">
-							{% for participant in row.participants_list %}
-							{{ participant }}<br>
-							{% endfor %}
-						</div>
-						{% endif %}
+    				<td class="participants">
+						<div class="scrollable"></div>
 					</td>
-    				<td>
-						{% if row.description != '' %}
-        				        <div class="scrollable">
-        				                {{ row.description }}<br>
-        				        </div>
-						{% endif %}
+    				<td class="description">
+						<div class="scrollable"></div>
 					</td>
     				<td class="handout"> {% if row.handout != '' %} {% for handout in row.handout_list %} <a href="{% url 'download_file' id=row.id handout=handout %}">{{ handout }}<br></a> {% endfor %} {% endif %} <br> <a class="add_file" href="{% url 'upload_file' id=row.id %}">+</a></td>
     				<td class="unpacking-progress" data-id="{{ row.id }}">
-						<a class="recording" href="{% url 'video_player' id=row.id %}" target="_blank"
-						   style="display: none;
-						   		font-family: Geneva, Arial, Helvetica, sans-serif;
-    							text-decoration: none;
-    							font-weight: bold;
-    							color: black;"
-						><h3 class="video"></h3></a>
-						<a class="unpack-archive" href="{% url 'unpack_archive' id=row.id %}"
-						   style="display: none;
-						   		font-family: Geneva, Arial, Helvetica, sans-serif;
-    							text-decoration: none;
-    							font-weight: bold;
-    							color: black;"
-						>Распаковать</a>
-						<a class="in-process"
-						   style="display: none;
-						   		font-family: Geneva, Arial, Helvetica, sans-serif;
-    							text-decoration: none;
-    							font-weight: bold;
-    							color: black;"
-						>В процессе...</a>
+						<a class="recording" href="{% url 'video_player' id=row.id %}" target="_blank"><h3 class="video"></h3></a>
+						<a class="unpack-archive" href="{% url 'unpack_archive' id=row.id %}">Распаковать</a>
+						<a class="in-process">В процессе...</a>
 					</td>
-					<td class="download-archive"><a href="{% url 'download_archive' id=row.id %}" target="_blank" style="display: none;">Скачать</a></td>
+					<td class="download-archive"><a href="{% url 'download_archive' id=row.id %}" target="_blank">Скачать</a></td>
 					{% if request.user.is_authenticated and request.user.is_staff %}
 					<td><a href="{% url 'download_protected_archive' id=row.id %}">{{ row.code_name }}</a></td>
 					<td class="edit_row" ><a class="edit_link" href="{% url 'edit_info' id=row.id %}">Редактировать</a></td>
 					<td class="delete_row"><a class="delete_link" href="{% url 'delete_info' id=row.id %}">Удалить</a></td>
 					{% endif %}
-    			</tr>
-				{% endif %}
-				{% if request.user.is_authenticated and not request.user.is_staff %}
-					{% if not row.is_private %}
-    				<tr {% if row.description == '' %} style="background-color: #E39163;" {% endif %}>
-    					<td>{{ row.id }}</td>
-    					<td>{{ row.name }}</td>
-    					<td>{{ row.event_date|date:"d-m-Y" }}</td>
-						<td>{{ row.lifetime|date:"d-m-Y" }}</td>
-    					<td>
-        				    {% if row.participants != '' %}
-        				        <div class="scrollable">
-        				            {% for participant in row.participants_list %}
-        				                {{ participant }}<br>
-        				            {% endfor %}
-        				        </div>
-        				    {% endif %}
-        				</td>
-    					<td>
-							{% if row.description != '' %}
-        					        <div class="scrollable">
-        					                {{ row.description }}<br>
-        					        </div>
-							{% endif %}
-						</td>
-    					<td class="handout"> {% if row.handout != '' %} {% for handout in row.handout_list %} <a href="{% url 'download_file' id=row.id handout=handout %}">{{ handout }}<br></a> {% endfor %} {% endif %} <br> <a class="add_file" href="{% url 'upload_file' id=row.id %}">+</a></td>
-    					<td><a href="{% url 'video_player' id=row.id %}" target="_blank">{{ row.recording }}</a></td>
-						<td>{% if row.unpacked != 1 %}-{% else %}<a href="{% url 'download_archive' id=row.id %}" target="_blank">Скачать</a>{% endif %}</td>
-    				</tr>
+					{% if "technical_support" in group %}
+					<td><a href="{% url 'download_protected_archive' id=row.id %}">{{ row.code_name }}</a></td>
+					<td class="edit_row" ><a class="edit_link" href="{% url 'edit_info' id=row.id %}">Редактировать</a></td>
 					{% endif %}
-				{% endif %}
+					{% if "local_admin" in group %}
+					<td class="edit_row" ><a class="edit_link" href="{% url 'edit_info' id=row.id %}">Редактировать</a></td>
+					{% endif %}
+					{% if "local_admin" in group %}
+					<td>{% if row.access_by_link == True %} <button class="copy_link" onclick="copyLink('{{ row.id }}')">Копировать</button>{% else %} - {% endif %}</td>
+					{% endif %}
+    			</tr>
     			{% endfor %}
     		</tbody>
     	</table>
@@ -218,7 +176,10 @@
 						all_data.forEach(function(item) {
 						  	var id = item['id'];
 						  	var progress = item['progress'];
-						  	var recording = item['recording']
+						  	var recording = item['recording'];
+						  	var name = item['name'];
+						  	var participants = item['participants'];
+						  	var description = item['description'];
 
 						  	var $cell = $('[data-id="' + id + '"].unpacking-progress');
 
@@ -244,13 +205,26 @@
 								$cell.children(".in-process").hide();
 						  	  	$cell.children('.recording').show();
 						  	  	$cell.children('.recording').text(recording);
+						  	  	$cell.closest('tr').find('.archive-name').text(name);
 						  	  	$cell.closest('tr').find('.download-archive').children('a').show();
+						  	  	$cell.closest('tr').find('.participants').children('div').text(participants);
+						  	  	$cell.closest('tr').find('.description').children('div').text(description);
 						  	}
 						});
             		}
 				});
-
         	}
+
+        	function copyLink(id) {
+			  var link = "http://127.0.0.1:8000/free-access/link-access/" + id;
+			  var tempInput = document.createElement("input");
+			  tempInput.value = link;
+			  document.body.appendChild(tempInput);
+			  tempInput.select();
+			  document.execCommand("copy");
+			  document.body.removeChild(tempInput);
+			  console.log("Ссылка скопирована в буфер обмена");
+			}
 		</script>
 	{% endblock %}
 	</body>

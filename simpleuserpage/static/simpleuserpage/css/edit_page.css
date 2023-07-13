@@ -28,6 +28,29 @@ input, label{
     vertical-align: middle;
 }
 
+#id_users_list{
+    background-color: #e5e5e5;
+    border-radius: 15px;
+    border: none;
+    height: 150px;
+    width: 200px;
+    padding: 5px;
+    text-align: center;
+    box-sizing: content-box;
+    margin: auto;
+    vertical-align: middle;
+    resize: both;
+    overflow-y: auto;
+    scrollbar-color: #458245 #714826;
+}
+
+select::-webkit-scrollbar {
+  width: 10px;
+}
+
+select::-webkit-scrollbar-track {
+  background: none;
+}
 
 textarea{
     border-radius: 15px;
@@ -89,4 +112,15 @@ button{
     margin: auto;
     vertical-align: middle;
     resize: both;
+}
+
+#id_users_list_0{
+    display: inline-block;
+    text-align: center;
+}
+
+fieldset {
+    font-family: Arial;
+    font-weight: lighter;
+    border: none;
 }
