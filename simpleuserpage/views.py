@@ -56,11 +56,20 @@ def show_archive_data(request):
     for obj in all_data:
         obj.participants_list = obj.participants.split(',')
 
+    instruction = ""
+
+    if len(group_names)>0:
+        instruction = group_names[0]
+    else:
+        instruction = "technical_support"
+
     # здесь указываете количество строк на странице по умолчанию
     paginated_data = Paginator(all_data, request.GET.get('lines_per_page', 50))
     page_number = request.GET.get('page')
     page_obj = paginated_data.get_page(page_number)
-    return render(request, 'simple_user_page.html', {'page_obj': page_obj, 'group': group_names})
+    return render(request, 'simple_user_page.html', {'page_obj': page_obj,
+                                                     'group': group_names,
+                                                     'instruction': instruction})
 
 
 def link_access_archive(request, id):
