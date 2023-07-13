@@ -15,7 +15,8 @@
 			{% if not "common_user" in group or request.user.is_staff %}
 			<a class="personal_account" href="{% url 'admin_panel' %}">Управление пользователями</a>
 			{% endif %}
-			<h3 class="longin_text">{{ request.user.get_username }}</h3>
+			<h3 class="login_text">{{ request.user.get_username }}</h3>
+			<a class="instruction" href="{% url 'download_pdf' instruction=group.0 %}">&#63;</a>
 			<a class="logout_btn" href="/accounts/logout">Выход</a>
 		</div>
 		<div class="pagination">
@@ -117,7 +118,7 @@
     				<td class="description">
 						<div class="scrollable"></div>
 					</td>
-    				<td class="handout"> {% if row.handout != '' %} {% for handout in row.handout_list %} <a href="{% url 'download_file' id=row.id handout=handout %}">{{ handout }}<br></a> {% endfor %} {% endif %} <br> <a class="add_file" href="{% url 'upload_file' id=row.id %}">+</a></td>
+    				<td class="handout"> {% if row.handout != '' %} {% for handout in row.handout_list %} <a href="{% url 'download_file' id=row.id handout=handout %}">{{ handout }}<br></a> {% endfor %} {% endif %} <br> {% if "local_admin" in group %}<a class="add_file" href="{% url 'upload_file' id=row.id %}">+</a>{% endif %}</td>
     				<td class="unpacking-progress" data-id="{{ row.id }}">
 						<a class="recording" href="{% url 'video_player' id=row.id %}" target="_blank"><h3 class="video"></h3></a>
 						<a class="unpack-archive" href="{% url 'unpack_archive' id=row.id %}">Распаковать</a>
