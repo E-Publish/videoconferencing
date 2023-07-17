@@ -21,13 +21,14 @@ from filemanagement.views import upload_file, unpack_zip, download_file, downloa
 from loginwindow.views import login_page, redirect_to_filemanager
 from simpleuserpage.views import show_archive_data, edit_info, admin_panel, edit_user_info, delete_user, \
     add_user, search, sort_table, video_player, video_streaming, update_unpacking_progress, link_access_archive, \
-    download_pdf
+    download_pdf, show_mir_archives
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', redirect_to_filemanager, name='main_page_redirect'),
     path('accounts/login', login_page, name='login_page'),
     path('simpleuser/', show_archive_data, name='simpleuser_page'),
+    path('simpleuser/mir-conferences/', show_mir_archives, name='mir_page'),
     path('simpleuser/search/', search, name='search_result'),
     path('simpleuser/administration/', admin_panel, name='admin_panel'),
     path('accounts/', include('django.contrib.auth.urls')),

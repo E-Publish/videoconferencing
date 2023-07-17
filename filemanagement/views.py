@@ -154,8 +154,11 @@ def unpack_zip_thread(request, id):
             archive_info.save()
             break
 
-    directory = os.path.join(DESTINATION, os.path.splitext(archive_info.code_name)[0],
-                             os.path.splitext(archive_info.code_name)[0])
+    directory = os.path.join(
+        DESTINATION,
+        os.path.splitext(archive_info.code_name)[0],
+        os.path.splitext(archive_info.code_name)[0]
+    )
     file = 'events.xml'
     file_path = os.path.join(directory, file)
     if os.path.isfile(file_path):

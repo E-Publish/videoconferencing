@@ -20,16 +20,17 @@ from .forms import EditArchiveInfoForm, EditUserInfoForm, AddUserForm, Technical
 
 
 def show_archive_data(request):
-    if request.user.is_staff:
-        find_new_files()
-        delete_by_lifetime()
 
     group_names = request.user.groups.values_list('name', flat=True)
+
+    if request.user.is_staff or "technical_support" in group_names:
+        find_new_files()
+        delete_by_lifetime()
 
     if request.user.is_authenticated and request.user.is_staff:
         all_data = ArchivesData.objects.all().order_by('id')
     elif "technical_support" in group_names:
-        all_data = ArchivesData.objects.all().order_by('id')
+        all_data = ArchivesData.objects.filter(is_MIR=False).order_by('id')
     elif "local_admin" in group_names:
         all_data = ArchivesData.objects.filter(access=request.user.id).order_by('id')
     elif "common_user" in group_names:
@@ -72,6 +73,44 @@ def show_archive_data(request):
                                                      'instruction': instruction})
 
 
+def show_mir_archives(request):
+
+    group_names = request.user.groups.values_list('name', flat=True)
+
+    if request.user.is_staff or "technical_support" in group_names:
+        find_new_files()
+        delete_by_lifetime()
+
+    if request.user.is_staff or "technical_support" in group_names:
+        all_data = ArchivesData.objects.filter(is_MIR=True).order_by('id')
+
+        show_recorded = request.GET.get('show_recorded')
+        if show_recorded:
+            all_data = ArchivesData.objects.exclude(recording="")
+
+        date_from = request.GET.get('date_from')
+        date_to = request.GET.get('date_to')
+
+        if date_from:
+            # Используем `time__gte` для выбора записей после `date_from`
+            all_data = all_data.filter(event_date__gte=date_from)
+
+        if date_to:
+            # Используем `time__lte` для выбора записей до `date_to`
+            all_data = all_data.filter(event_date__lte=date_to)
+
+        for obj in all_data:
+            obj.handout_list = obj.handout.split(',')
+
+        for obj in all_data:
+            obj.participants_list = obj.participants.split(',')
+
+        paginated_data = Paginator(all_data, request.GET.get('lines_per_page', 50))
+        page_number = request.GET.get('page')
+        page_obj = paginated_data.get_page(page_number)
+        return render(request, 'simple_user_page.html', {'page_obj': page_obj})
+
+
 def link_access_archive(request, id):
     archive_info = get_object_or_404(ArchivesData, id=id)
     archive_info.handout_list = archive_info.handout.split(',')
@@ -84,6 +123,7 @@ def link_access_archive(request, id):
 
 
 def update_unpacking_progress(request):
+
     ids = request.GET.getlist('ids[]')
     single_dict = {}
     response_array = []
