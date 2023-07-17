@@ -17,6 +17,7 @@ class ArchivesData(models.Model):
     access = models.SmallIntegerField(default=0)
     users_list = models.TextField(default=0)
     access_by_link = models.BooleanField(default=False)
+    is_MIR = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'conference'

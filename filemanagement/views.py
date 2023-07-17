@@ -32,14 +32,69 @@ def find_new_files():
         files = os.listdir(directory)
         for x in range(len(os.listdir(directory))):
             filename = files[x]
-            newarchive = ArchivesData(code_name=filename, event_date=event_date, lifetime=lifetime, is_private=True,
-                                      is_unremovable=True)
-            newarchive.save()
-            newpathdir = os.path.join(destination, os.path.splitext(filename)[0])
-            if not os.path.exists(newpathdir):
-                os.mkdir(newpathdir)
+            new_archive = ArchivesData(code_name=filename, event_date=event_date, lifetime=lifetime, is_private=True,
+                                       is_unremovable=True)
+            new_archive.save()
+            new_path_dir = os.path.join(destination, os.path.splitext(filename)[0])
+            if not os.path.exists(new_path_dir):
+                os.mkdir(new_path_dir)
             os.rename(os.path.join(directory, filename), os.path.join(destination, os.path.splitext(filename)[0],
                                                                       filename))
+
+
+# тестовая функция
+def autocomplete_info(filename, new_archive):
+    """autocomplete_info(filename: str, new_archive)
+    Выполняет парсинг файла событий для автозаполнения информации об архиве,
+    работает внутри функции find_new_files()"""
+
+    directory = BBB_VIDEO
+    file = f'{filename}.xml'
+    file_path = os.path.join(directory, file)
+    if os.path.isfile(file_path):
+
+        tree = Et.parse(file_path)
+        root = tree.getroot()
+        conference_name = ''
+        participants_names = []
+        all_ids = []
+        meeting = root.find('meeting')
+        external_id = meeting.get('externalId')
+
+        for event in root.findall('event'):
+            if event.get('eventname') == 'ParticipantJoinEvent':
+                if event.find('role').text == 'MODERATOR':
+                    name = event.find('name').text
+                    participants_names.append(name)
+
+        for event in root.findall('event'):
+            if event.get('eventname') == 'ParticipantStatusChangeEvent':
+                if event.find('status').text == 'role':
+                    _id = event.find('userId').text
+                    all_ids.append(_id)
+
+        all_ids.sort()
+        filtered_ids = list(set(all_ids))
+
+        for _id in filtered_ids:
+            for event in root.findall('event'):
+                if event.get('eventname') == 'ParticipantJoinEvent':
+                    if event.find('userId').text == _id:
+                        name = event.find('name').text
+                        participants_names.append(name)
+
+        participants_names.sort()
+        filtered_participants_names = list(set(participants_names))
+        participants_names_string = ','.join(filtered_participants_names)
+
+        for meeting in root.findall('meeting'):
+            conference_name = meeting.get('name')
+        if "MIR_REG" in external_id:
+            new_archive.is_MIR = True
+        new_archive.name = conference_name
+        new_archive.participants = participants_names_string
+        new_archive.description = '-'
+        new_archive.save()
 
 
 def delete_by_lifetime():
@@ -99,7 +154,8 @@ def unpack_zip_thread(request, id):
             archive_info.save()
             break
 
-    directory = os.path.join(DESTINATION, os.path.splitext(archive_info.code_name)[0], os.path.splitext(archive_info.code_name)[0])
+    directory = os.path.join(DESTINATION, os.path.splitext(archive_info.code_name)[0],
+                             os.path.splitext(archive_info.code_name)[0])
     file = 'events.xml'
     file_path = os.path.join(directory, file)
     if os.path.isfile(file_path):
