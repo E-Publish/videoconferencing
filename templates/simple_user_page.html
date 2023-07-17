@@ -16,7 +16,6 @@
 			<a class="personal_account" href="{% url 'admin_panel' %}">Управление пользователями</a>
 			{% endif %}
 			<h3 class="login_text">{{ request.user.get_username }}</h3>
-			<a class="instruction" href="{% url 'download_pdf' instruction=instruction %}">&#63;</a>
 			<a class="logout_btn" href="/accounts/logout">Выход</a>
 		</div>
 		<div class="pagination">
@@ -138,7 +137,7 @@
 					<td class="edit_row" ><a class="edit_link" href="{% url 'edit_info' id=row.id %}">Редактировать</a></td>
 					{% endif %}
 					{% if "local_admin" in group %}
-					<td>{% if row.access_by_link == True %} <button class="copy_link" onclick="copyLink('{{ row.id }}')">Копировать</button>{% else %} - {% endif %}</td>
+					<td>{% if row.access_by_link == True %} <button class="copy_link" onclick="copyLink('{{ row.id }}')" title="Ссылка доступа к конференции">Копировать</button>{% else %} - {% endif %}</td>
 					{% endif %}
     			</tr>
     			{% endfor %}
@@ -217,7 +216,7 @@
         	}
 
         	function copyLink(id) {
-			  var link = "http://127.0.0.1:8000/free-access/link-access/" + id;
+			  var link = "https://videoconferencing.epublish.ru/free-access/link-access/" + id;
 			  var tempInput = document.createElement("input");
 			  tempInput.value = link;
 			  document.body.appendChild(tempInput);

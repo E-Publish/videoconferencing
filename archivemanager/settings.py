@@ -68,10 +68,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'acarchiveinfo',
-        'USER': 'videoarc',
-        'PASSWORD': 'azz78znppcyLph',
-        'HOST': '172.16.1.28',
-        'PORT': '3307',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         }
@@ -129,23 +129,22 @@ LOGIN_URL = 'login/'
 
 # SMTP settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = '172.16.1.5'
-EMAIL_PORT = 465
-EMAIL_HOST_USER = 'sys@edusite.ru'
-EMAIL_HOST_PASSWORD = 'z4PScNE6'
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'testsmtp193@gmail.com'
+EMAIL_HOST_PASSWORD = 'xyikjbjsgmmakamd'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 
 
 MEDIA_ROOT = '../EpublishPath'
 
 
-BBB_VIDEO = '/opt/videoconferencing.epublish.ru/'
-DESTINATION = '/opt/resctrict/'
+BBB_VIDEO = 'C:/Users/kleme/Documents/EpublishPath/common'
+DESTINATION = 'C:/Users/kleme/Documents/EpublishPath/restrict'
 
 
 ZIP_PASSWORD = 'HiperbolA'
 
 CSRF_COOKIE_DOMAIN = '.epublish.ru'
 CSRF_TRUSTED_ORIGINS = ['https://videoconferencing.epublish.ru']
-
