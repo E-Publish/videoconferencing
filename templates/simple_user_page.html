@@ -16,7 +16,6 @@
 			<a class="personal_account" href="{% url 'admin_panel' %}">Управление пользователями</a>
 			{% endif %}
 			<h3 class="login_text">{{ request.user.get_username }}</h3>
-			<a class="instruction" href="{% url 'download_pdf' instruction=instruction %}">&#63;</a>
 			<a class="logout_btn" href="/accounts/logout">Выход</a>
 		</div>
 		<div class="pagination">
@@ -69,6 +68,8 @@
 					<button class="search_button" type="submit">Применить</button>
 				</form>
 			</div>
+			<a {% if mir_page %} class="choice-links-current"{% else %} class="choice-links"{% endif %} href="{% url 'mir_page' %}">Конференции МИР</a>
+			<a {% if not mir_page %} class="choice-links-current"{% else %} class="choice-links"{% endif %} href="{% url 'simpleuser_page' %}">Конференции</a>
 		</div>
     	<table>
     		<thead>
@@ -102,7 +103,7 @@
     		<tbody>
     			{% for row in page_obj %}
     			<tr {% if row.description == '' %} style="background-color: #E39163;" {% endif %}>
-    				<td>{{ row.id }}</td>
+					<td>{{ row.id }}</td>
     				<td class="archive-name"></td>
     				<td>{{ row.event_date|date:"d-m-Y" }}</td>
 					<td>
@@ -150,6 +151,9 @@
 
 	{% block javascript %}
 		<script>
+			function goBack() {
+			  window.history.back();
+			}
 
     		var progress_value = null;
 			if ($('.unpacking-progress').length > 0) {
@@ -169,7 +173,7 @@
             		ids.push(id);
 				});
             	$.ajax({
-            		url: "{% url 'update_unpacking_progress' %}",
+            		url: "/update_info/",
             		data: {ids: ids},
             		success: function(data) {
 						console.log("Данные успешно получены:", data);
@@ -206,18 +210,19 @@
 								$cell.children(".in-process").hide();
 						  	  	$cell.children('.recording').show();
 						  	  	$cell.children('.recording').text(recording);
-						  	  	$cell.closest('tr').find('.archive-name').text(name);
-						  	  	$cell.closest('tr').find('.download-archive').children('a').show();
-						  	  	$cell.closest('tr').find('.participants').children('div').text(participants);
-						  	  	$cell.closest('tr').find('.description').children('div').text(description);
 						  	}
+						  	$cell.children('.recording').text(recording);
+						  	$cell.closest('tr').find('.archive-name').text(name);
+						  	$cell.closest('tr').find('.download-archive').children('a').show();
+						  	$cell.closest('tr').find('.participants').children('div').text(participants);
+						  	$cell.closest('tr').find('.description').children('div').text(description);
 						});
             		}
 				});
         	}
 
         	function copyLink(id) {
-			  var link = "https://videoconferencing.epublish.ru/free-access/link-access/" + id;
+			  var link = "http://127.0.0.1:8000/free-access/link-access/" + id;
 			  var tempInput = document.createElement("input");
 			  tempInput.value = link;
 			  document.body.appendChild(tempInput);

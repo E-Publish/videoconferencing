@@ -91,6 +91,7 @@ button{
     font-weight: lighter;
     vertical-align: middle;
     box-sizing: border-box;
+    cursor: pointer;
 }
 
 .helptext{
