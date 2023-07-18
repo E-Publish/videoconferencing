@@ -9,6 +9,14 @@
 <body>
     <div class="auth_block">
         <img class="logo" src="{% static 'loginwindow/img/logo.svg' %}" alt="">
+        <div class="dropdown">
+            <button class="dropbtn">Инструкции</button>
+            <div class="dropdown-content">
+              <a href="{% url 'download_pdf' instruction='common_user' %}">Зритель</a>
+              <a href="{% url 'download_pdf' instruction='technical_support' %}">Техподдержка</a>
+              <a href="{% url 'download_pdf' instruction='local_admin' %}">Администратор</a>
+            </div>
+        </div>
         <div class="login-container">
             <form method="post" action="{% url 'login' %}">
                 {% csrf_token %}
