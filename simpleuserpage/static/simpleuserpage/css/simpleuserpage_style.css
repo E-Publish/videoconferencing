@@ -380,3 +380,80 @@ table tbody tr:last-child td:last-child{
     background-color: #F48120;
     border-radius: 15px;
 }
+
+.MIR-selector{
+    display: inline-block;
+    align-content: center;
+    margin-left: 2%;
+	margin-right: auto;
+	background-color: #F48120;
+    box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.30);
+	border-radius: 15px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 5px;
+	padding-right: 5px;
+	border: none;
+	font-family: Geneva, Arial, Helvetica, sans-serif;
+}
+
+.MIR-selector{
+    display: inline-block;
+    align-content: center;
+    margin-left: 2%;
+	margin-right: auto;
+	background-color: #e5e5e5;
+    box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.30);
+	border-radius: 15px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 5px;
+	padding-right: 5px;
+	border: none;
+	font-family: Geneva, Arial, Helvetica, sans-serif;
+	text-align: center;
+}
+
+.choice-links{
+    display: inline-block;
+    align-content: center;
+    cursor: pointer;
+    margin-left: 2%;
+	margin-right: auto;
+	background-color: #e5e5e5;
+    box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.30);
+	border-radius: 15px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 5px;
+	padding-right: 5px;
+	border: none;
+	font-family: Geneva, Arial, Helvetica, sans-serif;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+}
+
+.choice-links:hover{
+	background-color: #b5b5b5;
+}
+
+.choice-links-current{
+    display: inline-block;
+    align-content: center;
+    margin-left: 2%;
+    cursor: pointer;
+	margin-right: auto;
+	background-color: #F48120;
+    box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.30);
+	border-radius: 15px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 5px;
+	padding-right: 5px;
+	border: none;
+	font-family: Geneva, Arial, Helvetica, sans-serif;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+}

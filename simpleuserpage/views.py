@@ -19,26 +19,30 @@ from .forms import EditArchiveInfoForm, EditUserInfoForm, AddUserForm, Technical
     TechnicalSupportEditUserInfoForm, LocalAdminAddUserForm, LocalAdminEditUserInfoForm
 
 
+# вывод информации на страницу и сортировки
 def show_archive_data(request):
-    if request.user.is_staff:
-        find_new_files()
-        delete_by_lifetime()
-
+    mir_page = False
+    # нужно для определения группы пользователя
     group_names = request.user.groups.values_list('name', flat=True)
 
-    if request.user.is_authenticated and request.user.is_staff:
-        all_data = ArchivesData.objects.all().order_by('id')
+    # фильтрация данных в соответствии с ролями
+    if request.user.is_authenticated and request.user.is_staff or "technical_support" in group_names:
+        all_data = ArchivesData.objects.filter(is_MIR=False).order_by('id')
+        find_new_files()
+        delete_by_lifetime()
     elif "technical_support" in group_names:
-        all_data = ArchivesData.objects.all().order_by('id')
+        all_data = ArchivesData.objects.filter(is_MIR=False).order_by('id')
     elif "local_admin" in group_names:
         all_data = ArchivesData.objects.filter(access=request.user.id).order_by('id')
     elif "common_user" in group_names:
         all_data = ArchivesData.objects.filter(users_list__contains=request.user.id).order_by('id')
 
+    # фильтр "только с записью"
     show_recorded = request.GET.get('show_recorded')
     if show_recorded:
         all_data = ArchivesData.objects.exclude(recording="")
 
+    # фильтр по дате "от - до"
     date_from = request.GET.get('date_from')
     date_to = request.GET.get('date_to')
 
@@ -58,18 +62,63 @@ def show_archive_data(request):
 
     instruction = ""
 
-    if len(group_names)>0:
+    if len(group_names) > 0:
         instruction = group_names[0]
     else:
         instruction = "technical_support"
 
-    # здесь указываете количество строк на странице по умолчанию
+    # количество строк на странице по умолчанию
     paginated_data = Paginator(all_data, request.GET.get('lines_per_page', 50))
     page_number = request.GET.get('page')
     page_obj = paginated_data.get_page(page_number)
     return render(request, 'simple_user_page.html', {'page_obj': page_obj,
                                                      'group': group_names,
-                                                     'instruction': instruction})
+                                                     'instruction': instruction,
+                                                     'mir_page': mir_page})
+
+
+# отображение конференций только из мира
+def show_mir_archives(request):
+    group_names = request.user.groups.values_list('name', flat=True)
+    if request.user.is_authenticated and request.user.is_staff or "technical_support" in group_names:
+        mir_page = True
+
+        group_names = request.user.groups.values_list('name', flat=True)
+
+        if request.user.is_staff or "technical_support" in group_names:
+            find_new_files()
+            delete_by_lifetime()
+
+        if request.user.is_staff or "technical_support" in group_names:
+            all_data = ArchivesData.objects.filter(is_MIR=True).order_by('id')
+
+            show_recorded = request.GET.get('show_recorded')
+            if show_recorded:
+                all_data = ArchivesData.objects.exclude(recording="")
+
+            date_from = request.GET.get('date_from')
+            date_to = request.GET.get('date_to')
+
+            if date_from:
+                # Используем `time__gte` для выбора записей после `date_from`
+                all_data = all_data.filter(event_date__gte=date_from)
+
+            if date_to:
+                # Используем `time__lte` для выбора записей до `date_to`
+                all_data = all_data.filter(event_date__lte=date_to)
+
+            for obj in all_data:
+                obj.handout_list = obj.handout.split(',')
+
+            for obj in all_data:
+                obj.participants_list = obj.participants.split(',')
+
+            paginated_data = Paginator(all_data, request.GET.get('lines_per_page', 50))
+            page_number = request.GET.get('page')
+            page_obj = paginated_data.get_page(page_number)
+            return render(request, 'simple_user_page.html', {'page_obj': page_obj, 'mir_page': mir_page})
+    else:
+        return redirect('simpleuser_page', permanent=True)
 
 
 def link_access_archive(request, id):
@@ -84,6 +133,7 @@ def link_access_archive(request, id):
 
 
 def update_unpacking_progress(request):
+
     ids = request.GET.getlist('ids[]')
     single_dict = {}
     response_array = []
@@ -237,6 +287,7 @@ def add_user(request):
         return render(request, 'add_user.html', {'form': form, 'group': group_names})
     else:
         return redirect('simpleuser_page')
+
 
 def search(request):
     query = request.GET.get('q')
