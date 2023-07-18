@@ -372,7 +372,10 @@ def download_archive(request, id):
 def delete_info(request, id):
     if request.user.is_authenticated and request.user.is_staff:
         obj_to_delete = ArchivesData.objects.get(id=id)
-        obj_to_delete.delete()
+        if obj_to_delete.is_MIR:
+            return redirect('simpleuser_page')
+        else:
+            obj_to_delete.delete()
 
         # удаление самого архива
         directory = DESTINATION

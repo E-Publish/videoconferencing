@@ -64,6 +64,7 @@ select{
     color: white;
     font-weight: lighter;
     font-family: Geneva, Arial, Helvetica, sans-serif;
+    cursor: pointer;
 }
 
 .adduser_btn{

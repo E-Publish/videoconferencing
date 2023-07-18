@@ -68,8 +68,10 @@
 					<button class="search_button" type="submit">Применить</button>
 				</form>
 			</div>
-			<a {% if mir_page %} class="choice-links-current"{% else %} class="choice-links"{% endif %} href="{% url 'mir_page' %}">Конференции МИР</a>
+			{% if request.user.is_authenticated and request.user.is_staff or "technical_support" in group%}
 			<a {% if not mir_page %} class="choice-links-current"{% else %} class="choice-links"{% endif %} href="{% url 'simpleuser_page' %}">Конференции</a>
+			<a {% if mir_page %} class="choice-links-current"{% else %} class="choice-links"{% endif %} href="{% url 'mir_page' %}">Архив МИР</a>
+			{% endif %}
 		</div>
     	<table>
     		<thead>
@@ -86,7 +88,9 @@
 					{% if request.user.is_authenticated and request.user.is_staff %}
 					<th>Название файла</th>
 					<th class="edit_row" >Редактирование</th>
-					<th class="delete_row">Удаление</th>
+						{% if not mir_page %}
+						<th class="delete_row">Удаление</th>
+						{% endif %}
 					{% endif %}
 					{% if "technical_support" in group %}
 					<th>Название файла</th>
@@ -129,7 +133,9 @@
 					{% if request.user.is_authenticated and request.user.is_staff %}
 					<td><a href="{% url 'download_protected_archive' id=row.id %}">{{ row.code_name }}</a></td>
 					<td class="edit_row" ><a class="edit_link" href="{% url 'edit_info' id=row.id %}">Редактировать</a></td>
-					<td class="delete_row"><a class="delete_link" href="{% url 'delete_info' id=row.id %}">Удалить</a></td>
+						{% if not mir_page %}
+						<td class="delete_row"><a class="delete_link" href="{% url 'delete_info' id=row.id %}">Удалить</a></td>
+						{% endif %}
 					{% endif %}
 					{% if "technical_support" in group %}
 					<td><a href="{% url 'download_protected_archive' id=row.id %}">{{ row.code_name }}</a></td>
