@@ -321,49 +321,58 @@ def download_video(request, id):
 
 # прямое скачивание архива(запаролен) для техподдержки
 def download_protected_archive(request, id):
-    directory = DESTINATION
-    obj = ArchivesData.objects.get(id=id)
-    archive = os.path.join(directory, os.path.splitext(obj.code_name)[0], obj.code_name)
-    if os.path.isfile(archive):
-        with open(archive, 'rb') as fh:
-            response = FileResponse(open(archive, 'rb'))
-            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(archive)
-            return response
+    group_names = request.user.groups.values_list('name', flat=True)
+    if request.user.is_staff or "technical_support" in group_names:
+        directory = DESTINATION
+        obj = ArchivesData.objects.get(id=id)
+        archive = os.path.join(directory, os.path.splitext(obj.code_name)[0], obj.code_name)
+        if os.path.isfile(archive):
+            with open(archive, 'rb') as fh:
+                response = FileResponse(open(archive, 'rb'))
+                response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(archive)
+                return response
+        else:
+            return redirect('simpleuser_page')
     else:
         return redirect('simpleuser_page')
 
 
 # скачивание архива с раздаточным материалом и конференцией для пользователей
 def download_archive(request, id):
+    """download_archive(request, id: int)
+    осуществляет передачу архива пользователю для скачивания"""
     obj = ArchivesData.objects.get(id=id)
+    if str(request.user.id) in obj.users_list or str(request.user.id) in str(obj.access):
 
-    # название архива, который будет передан пользователю
-    zip_name = os.path.join(
-        DESTINATION,
-        os.path.splitext(obj.code_name)[0],
-        f'{os.path.splitext(obj.code_name)[0]}-{obj.event_date}.zip'
-    )
+        # название архива, который будет передан пользователю
+        zip_name = os.path.join(
+            DESTINATION,
+            os.path.splitext(obj.code_name)[0],
+            f'{os.path.splitext(obj.code_name)[0]}-{obj.event_date}.zip'
+        )
 
-    # путь до папки, которую поместим в архив
-    zip_path = os.path.join(
-        DESTINATION,
-        os.path.splitext(obj.code_name)[0],
-        os.path.splitext(obj.code_name)[0]
-    )
+        # путь до папки, которую поместим в архив
+        zip_path = os.path.join(
+            DESTINATION,
+            os.path.splitext(obj.code_name)[0],
+            os.path.splitext(obj.code_name)[0]
+        )
 
-    zip_file = zipfile.ZipFile(zip_name, 'w')
+        zip_file = zipfile.ZipFile(zip_name, 'w')
 
-    for root, dirs, files in os.walk(str(zip_path)):
-        for file in files:
-            file_path = os.path.join(root, file)
-            zip_file.write(file_path, file, compress_type=zipfile.ZIP_DEFLATED)
+        for root, dirs, files in os.walk(str(zip_path)):
+            for file in files:
+                file_path = os.path.join(root, file)
+                zip_file.write(file_path, file, compress_type=zipfile.ZIP_DEFLATED)
 
-    zip_file.close()
+        zip_file.close()
 
-    if os.path.isfile(zip_name):
-        response = FileResponse(open(zip_name, 'rb'))
-        response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(zip_name)
-        return response
+        if os.path.isfile(zip_name):
+            response = FileResponse(open(zip_name, 'rb'))
+            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(zip_name)
+            return response
+        else:
+            return redirect('simpleuser_page')
     else:
         return redirect('simpleuser_page')
 

@@ -123,7 +123,14 @@
     				<td class="description">
 						<div class="scrollable"></div>
 					</td>
-    				<td class="handout"> {% if row.handout != '' %} {% for handout in row.handout_list %} <a href="{% url 'download_file' id=row.id handout=handout %}">{{ handout }}<br></a> {% endfor %} {% endif %} <br> {% if "local_admin" in group %}<a class="add_file" href="{% url 'upload_file' id=row.id %}">+</a>{% endif %}</td>
+    				<td class="handout">
+						{% if row.handout != '' %} {% for handout in row.handout_list %}
+						<a href="{% url 'download_file' id=row.id handout=handout %}">{{ handout }}<br></a>
+						{% endfor %}
+						{% endif %}
+						<br>
+						{% if "local_admin" in group %}
+						<a class="add_file" href="{% url 'upload_file' id=row.id %}">+</a>{% endif %}</td>
     				<td class="unpacking-progress" data-id="{{ row.id }}">
 						<a class="recording" href="{% url 'video_player' id=row.id %}" target="_blank"><h3 class="video"></h3></a>
 						<a class="unpack-archive" href="{% url 'unpack_archive' id=row.id %}">Распаковать</a>
@@ -176,6 +183,7 @@
         	    $(".unpacking-progress").each(function () {
             		var $cell = $(this); // текущая ячейка
             		var id = $cell.data("id");
+
             		ids.push(id);
 				});
             	$.ajax({
@@ -216,7 +224,7 @@
 								$cell.children(".in-process").hide();
 						  	  	$cell.children('.recording').show();
 						  	  	$cell.children('.recording').text(recording);
-						  	}
+
 						  	$cell.children('.recording').text(recording);
 						  	$cell.closest('tr').find('.archive-name').text(name);
 						  	$cell.closest('tr').find('.download-archive').children('a').show();

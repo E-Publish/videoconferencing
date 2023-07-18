@@ -62,7 +62,7 @@ def show_archive_data(request):
 
     instruction = ""
 
-    if len(group_names)>0:
+    if len(group_names) > 0:
         instruction = group_names[0]
     else:
         instruction = "technical_support"
