@@ -30,7 +30,7 @@ body{
 form {
     display: flex;
     flex-direction: column;
-    padding-top: 35%;
+    padding-top: 25%;
 }
 
 .form-group {
