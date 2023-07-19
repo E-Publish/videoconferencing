@@ -107,7 +107,7 @@
     		<tbody>
     			{% for row in page_obj %}
     			<tr {% if row.description == '' %} style="background-color: #E39163;" {% endif %}>
-    				<td>{{ row.id }}</td>
+					<td>{{ row.id }}</td>
     				<td class="archive-name"></td>
     				<td>{{ row.event_date|date:"d-m-Y" }}</td>
 					<td>
@@ -185,10 +185,11 @@
         	    $(".unpacking-progress").each(function () {
             		var $cell = $(this); // текущая ячейка
             		var id = $cell.data("id");
+
             		ids.push(id);
 				});
             	$.ajax({
-            		url: "{% url 'update_unpacking_progress' %}",
+            		url: "/update_info/",
             		data: {ids: ids},
             		success: function(data) {
 						console.log("Данные успешно получены:", data);

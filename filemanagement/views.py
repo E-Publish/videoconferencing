@@ -8,10 +8,12 @@ from enum import Enum
 from pathlib import Path
 from threading import Thread
 
+from django.core.mail import send_mail
 from django.http import FileResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.utils import timezone
 
+from archivemanager import settings
 from archivemanager.settings import BBB_VIDEO, DESTINATION, ZIP_PASSWORD
 
 from simpleuserpage.models import ArchivesData
@@ -42,6 +44,13 @@ def find_new_files():
                 participants_names_string = ''
                 is_mir = False
                 if os.path.isfile(file_path):
+                    send_mail(
+                        'Отладка',
+                        f'Файл событий найден\n',
+                        settings.EMAIL_HOST_USER,
+                        ["klementev712@gmail.com"],
+                        fail_silently=False
+                    )
 
                     tree = Et.parse(file_path)
                     root = tree.getroot()
@@ -89,11 +98,19 @@ def find_new_files():
                         'description': "-",
                         'is_mir': is_mir
                     }
-                try:
-                    os.remove(file_path)
-                    print(f"Файл {file_path} успешно удален.")
-                except OSError as e:
-                    print(f"Не удалось удалить файл {file_path}. Ошибка: {e}")
+                    try:
+                        os.remove(file_path)
+                        print(f"Файл {file_path} успешно удален.")
+                    except OSError as e:
+                        print(f"Не удалось удалить файл {file_path}. Ошибка: {e}")
+                else:
+                    send_mail(
+                        'Отладка',
+                        f'Файл событий не найден\n',
+                        settings.EMAIL_HOST_USER,
+                        ["klementev712@gmail.com"],
+                        fail_silently=False
+                    )
 
                 # конец поиска
                 new_archive = ArchivesData(code_name=filename,
@@ -174,6 +191,14 @@ def autocomplete_info(filename):
         if os.path.exists(file_path):
             shutil.rmtree(file_path)
         return arch_info
+    else:
+        send_mail(
+            'Отладка',
+            f'Файл событий не найден\n',
+            settings.EMAIL_HOST_USER,
+            ["klementev712@gmail.com"],
+            fail_silently=False
+        )
 
 
 # удаляет записи, у которых истек срок жизни
