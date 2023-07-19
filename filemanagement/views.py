@@ -44,14 +44,6 @@ def find_new_files():
                 participants_names_string = ''
                 is_mir = False
                 if os.path.isfile(file_path):
-                    send_mail(
-                        'Отладка',
-                        f'Файл событий найден\n',
-                        settings.EMAIL_HOST_USER,
-                        ["klementev712@gmail.com"],
-                        fail_silently=False
-                    )
-
                     tree = Et.parse(file_path)
                     root = tree.getroot()
                     participants_names = []
@@ -103,14 +95,6 @@ def find_new_files():
                         print(f"Файл {file_path} успешно удален.")
                     except OSError as e:
                         print(f"Не удалось удалить файл {file_path}. Ошибка: {e}")
-                else:
-                    send_mail(
-                        'Отладка',
-                        f'Файл событий не найден\n',
-                        settings.EMAIL_HOST_USER,
-                        ["klementev712@gmail.com"],
-                        fail_silently=False
-                    )
 
                 # конец поиска
                 new_archive = ArchivesData(code_name=filename,
@@ -191,14 +175,6 @@ def autocomplete_info(filename):
         if os.path.exists(file_path):
             shutil.rmtree(file_path)
         return arch_info
-    else:
-        send_mail(
-            'Отладка',
-            f'Файл событий не найден\n',
-            settings.EMAIL_HOST_USER,
-            ["klementev712@gmail.com"],
-            fail_silently=False
-        )
 
 
 # удаляет записи, у которых истек срок жизни
