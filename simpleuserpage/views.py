@@ -60,20 +60,12 @@ def show_archive_data(request):
     for obj in all_data:
         obj.participants_list = obj.participants.split(',')
 
-    instruction = ""
-
-    if len(group_names) > 0:
-        instruction = group_names[0]
-    else:
-        instruction = "technical_support"
-
     # количество строк на странице по умолчанию
     paginated_data = Paginator(all_data, request.GET.get('lines_per_page', 50))
     page_number = request.GET.get('page')
     page_obj = paginated_data.get_page(page_number)
     return render(request, 'simple_user_page.html', {'page_obj': page_obj,
                                                      'group': group_names,
-                                                     'instruction': instruction,
                                                      'mir_page': mir_page})
 
 
@@ -116,7 +108,9 @@ def show_mir_archives(request):
             paginated_data = Paginator(all_data, request.GET.get('lines_per_page', 50))
             page_number = request.GET.get('page')
             page_obj = paginated_data.get_page(page_number)
-            return render(request, 'simple_user_page.html', {'page_obj': page_obj, 'mir_page': mir_page})
+            return render(request, 'simple_user_page.html', {'page_obj': page_obj,
+                                                             'group': group_names,
+                                                             'mir_page': mir_page})
     else:
         return redirect('simpleuser_page', permanent=True)
 
