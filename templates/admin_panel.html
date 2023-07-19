@@ -9,7 +9,7 @@
 	<body>
 		<div class="header">
 			<h4 class="personal_account">{{ request.user.get_username }}</h4>
-			<a class="logout_btn" href="{% url 'simpleuser_page' %}">Назад</a>
+			<a class="logout_btn" onclick="goBack()">Назад</a>
 		</div>
 		<div class="pagination">
 			<div class="paginator">
@@ -74,4 +74,10 @@
 			</tbody>
 		</table>
 	</body>
+	<script>
+		function goBack() {
+		  window.history.back();
+		}
+	</script>
+
 </html>

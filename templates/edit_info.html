@@ -13,11 +13,15 @@
         <form method="POST" class="post-form">{% csrf_token %}
             {{ form.as_div }}
             <button type="submit" class="save btn btn-default">Сохранить</button>
-            <a class="cancel" href="{% url 'simpleuser_page' %}">Отменить</a>
+            <a class="cancel" onclick="goBack()">Отменить</a>
         </form>
 
         {% block javascript %}
         <script>
+            function goBack() {
+              window.history.back();
+            }
+
             {% if "local_admin" in group %}
                 document.getElementById('id_is_private').style.display = 'none';
                 document.querySelector('label[for="id_is_private"]').style.display = 'none';

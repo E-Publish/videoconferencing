@@ -1,12 +1,10 @@
 body{
-    margin-top: 15%;
+    margin-top: 3%;
     background-color: #fff;
     align-content: center;
     text-align: center;
     font-family: Geneva, Arial, Helvetica, sans-serif;
 }
-
-
 
 .container{
     display: inline-block;

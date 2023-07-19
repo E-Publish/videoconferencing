@@ -6,7 +6,6 @@ from django.urls import reverse_lazy
 from loginwindow.forms import AuthUserForm
 
 
-# Create your views here.
 def login_page(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)

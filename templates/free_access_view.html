@@ -8,6 +8,19 @@
     <body>
         <div class="plate">
             <h1 class="name">{{ data.name }}</h1>
+            <div class="col-md-12 col-sm-12">
+                <video
+                    id="my-video"
+                    class="video-js"
+                    controls
+                    preload="auto"
+                    width="100%"
+                    height="100%"
+                    data-setup="{}"
+                >
+                    <source src="{% url 'stream' data.id %}" type="video/mp4"/>
+                </video>
+            </div>
             <div class="container">
                 <h3>Дата проведения</h3>
                 {{ data.event_date|date:"d-m-Y" }}
