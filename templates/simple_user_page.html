@@ -68,7 +68,7 @@
 					<button class="search_button" type="submit">Применить</button>
 				</form>
 			</div>
-			{% if request.user.is_authenticated and request.user.is_staff or "technical_support" in group%}
+			{% if request.user.is_staff or "technical_support" in group%}
 			<a {% if not mir_page %} class="choice-links-current"{% else %} class="choice-links"{% endif %} href="{% url 'simpleuser_page' %}">Конференции</a>
 			<a {% if mir_page %} class="choice-links-current"{% else %} class="choice-links"{% endif %} href="{% url 'mir_page' %}">Архив МИР</a>
 			{% endif %}
