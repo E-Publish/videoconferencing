@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-f&_2y@o(tgobr2y3&^n^&%!icnw(vobwk^ps+1dkps*$4k1htt'
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -67,11 +67,11 @@ WSGI_APPLICATION = 'archivemanager.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'acarchiveinfo',
-        'USER': 'videoarc',
-        'PASSWORD': 'azz78znppcyLph',
-        'HOST': '172.16.1.28',
-        'PORT': '3307',
+        'NAME': 'archiveinfo',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         }
@@ -129,10 +129,10 @@ LOGIN_URL = 'login/'
 
 # SMTP settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = '172.16.1.5'
+EMAIL_HOST = ''
 EMAIL_PORT = 465
-EMAIL_HOST_USER = 'sys@edusite.ru'
-EMAIL_HOST_PASSWORD = 'z4PScNE6'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 
@@ -144,7 +144,7 @@ BBB_VIDEO = '/opt/videoconferencing.epublish.ru/'
 DESTINATION = '/opt/resctrict/'
 
 
-ZIP_PASSWORD = 'HiperbolA'
+ZIP_PASSWORD = ''
 
 CSRF_COOKIE_DOMAIN = '.epublish.ru'
 CSRF_TRUSTED_ORIGINS = ['https://videoconferencing.epublish.ru']
